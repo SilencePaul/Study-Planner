@@ -1,19 +1,29 @@
 ## ECE1778 Project Proposal
 
+---
+
 #### Team Members
 - BINBIN WANG (1011770460)
 - Yiming Liu (1011337402)
 - Yalin Tuo (1006033196)
+  
+---
 
 ### 1. Motivation
 #### 1.1 The Problem
 Many students have difficulty planning their study time. Some of them are easily forget what they are supposed to do, while others study for long periods without taking breaks. Some start late and rush before exams. Also, notes are easily lost, and phone reminders are often ignored. This shows without a simple plan, studying feels stressfully and unorganized. To stay focused and manage time well, students need a study app that makes learning easier and calmer. 
 
+
+
 #### 1.2 Why It Is Worth Pursuing
 A study tool can make studying easier and more focused. When students see their progress, they feel proud. A good schedule saves time and keeps the mind calm. This app helps users build simple habits. It also gives reminders to study and rest. Its user-friendly design supports balance between work and breaks.
 
+
+
 #### 1.3 Target Users
 The main users are students in high school or university. They have many assignments, tests, and projects. Some of them want better time control and daily motivation. This app helps them for self-learners and online students. People can use it without training. 
+
+
 
 #### 1.4 Existing Solution and Limitation
 Many students use tools like Notion or Google Calendar. These help organize schedules but not track study habits. They have too many options and make people feel heavy. Also, some app show ads or need internet all the time. Our app is simple and clean. It keeps planning, reminders, and rewards in one place. It works offline and focused only on study.
@@ -23,74 +33,24 @@ Many students use tools like Notion or Google Calendar. These help organize sche
 ### 2. Objective and Key Features
 
 #### 2.1 Objective
-The goal of this project is to build a Study Planner App that helps students plan, track, and enjoy learning. This app gives a clear and simple way to organize study life. It is made to keep users focused, calm, and motivated during study time.
+The goal of this project is to build a Study Planner App that helps students plan, track, and enjoy learning. This app gives a clear and simple way to organize study life. It is made to keep users focused, clam, and motivatied during study time.
 
----
+The app will have five screens. The Home Screen shows daily records with medals for completed goals.
+On the Detail Screen, users can see a timer, study tips, and a list of tasks. The Add Section Screen lets them create or edit a study task. The Manage Assignnment Screen lists assignments with progress bars to show how much is done. On the Settings Page, users can changed reminders and choose light or dark mode.
 
-#### 2.2 Navigation Structure
-The app will have five screens. 
-- **Home Screen** – Displays daily study summaries, recent sessions, and medals for completed goals.  
-- **Detail Screen** – Shows a session timer, study tips fetched from a public API, and task lists.  
-- **Add Session Screen** – Allows users to create or edit a study task with subject, duration, and notes.  
-- **Manage Assignment Screen** – Lists assignments with progress bars that visualize completion.  
-- **Settings Screen** – Lets users customize reminders, switch between light/dark modes, and view achievements.
+All data will be saved with AsyncStorage, and changes will be managed by useReducer. Expo Notifications will send alert to users to study or rest. Assignement alert will appear three dasy before the due date. And a public API will bring study quotes to make users feel encouraged. 
 
-Navigation will be implemented using **React Navigation (Stack Navigator)** with **TypeScript typing** for type-safe routing and better maintainability.
+Three advanced parts will make it better. 
+First, Badges reward users when they finishing daily goals (Gamification). 
+Second, Pedomerter reminders tell them to take breaks after long sessions (Sensors). 
+Third, Animated bars will shows how much work is done.
 
----
-
-#### 2.3 State Management and Data Persistence
-The app manages all session data (study records, timers, and task completion) through **React Native useReducer** for structured and predictable state updates.
-
-- **State Management:**  
-  The reducer defines actions such as `ADD_SESSION`, `UPDATE_DURATION`, and `TOGGLE_TASK_COMPLETE`. This allows consistent state transitions when users create new sessions, modify durations, or mark tasks as complete.
-
-- **Persistence:**  
-  All data will be stored locally with **AsyncStorage**, enabling offline access.  
-  On launch, previously saved sessions are reloaded from storage, restoring the user’s study history seamlessly.
-
-**Data Flow:**  
-`User Action → Dispatch Action → Reducer Update → Save to AsyncStorage → Reload on Next Launch`
-
-This ensures robust local data management with minimal performance overhead.
-
----
-
-#### 2.4 Notifications and API Integration
-The app integrates **Expo Notifications** to keep users informed and motivated:
-- **Study Reminders:** Triggered during active study sessions at selected intervals (e.g., 25, 45, or 60 minutes).  
-- **Assignment Alerts:** Sent automatically three days before an assignment due date.  
-- **Study Tips API:** A public API fetches motivational quotes and study advice for daily encouragement.
-
-These notifications and external data integrations reinforce consistent learning habits and keep the user engaged.
-
----
-
-#### 2.5 Advanced Features
-To make studying more engaging and interactive:
-- **Gamification with Badges** – Reward users with medals or badges when daily goals are completed.  
-- **Pedometer Integration** – Use **Expo Pedometer** to detect movement and suggest breaks after long study sessions.  
-- **Custom Animations** – Animated progress bars visualize productivity and make the experience lively.
-
----
-
-#### 2.6 Deployment and Feasibility
-These small motions make the app feel lively and fun. The project will use **React Native** and **Expo** to build each parts. 
-**Expo EAS Build** allows the app to work well on both Android and iOS platforms. 
-The app loads fast, feels simple, and can be finished in a short time. The clean layout makes it friendly and comfortable for all students.
+These small motions make the app feel lively and fun. The project will use React Native and Expo to build each parts. Expo EAS Build allows the app to work well on both Android and iOS platforms. It loads fast, feels simple, and can be finished in a short time. The clean layout makes it friendly and comfortable for all students.
 
 
-## 2. Objective and Key Features
+#### 2.2. Navigation Structure
 
-### Core Features Overview
-The **Study Planner App** is structured with modular navigation, robust local data management, and mobile device integration.  
-Built with **React Native**, **Expo**, and **TypeScript**, it demonstrates key mobile development concepts such as navigation, state management, notifications, persistence, and sensor-based interaction.
-
----
-
-### 1. Navigation Structure
-
-#### 1.1 Screens Design
+##### 2.2.1. Screens Design
 
 **Home Screen (Study Records List)**
 - **Header:** Displays “Study Planner”
@@ -142,9 +102,8 @@ Built with **React Native**, **Expo**, and **TypeScript**, it demonstrates key m
 - **Notification Settings:** Toggle to enable/disable study reminders
 - **Appearance Settings:** Light / Dark / Auto theme mode
 
----
 
-#### 1.2 File-Based Routes (Expo Router)
+##### 2.2.2. File-Based Routes (Expo Router)
 The following file structure ensures modularity and maintainability across the app:
 ```
 app/
@@ -182,9 +141,8 @@ app/
 └── constants/ # Route names, default timer, etc.
 ```
 
----
 
-### 2. State Management and Persistence
+#### 2.3. State Management and Persistence
 - **State Management (useReducer):**  
   Handles actions such as `ADD_SESSION`, `UPDATE_DURATION`, and `TOGGLE_TASK_COMPLETE` for predictable, centralized state updates.
 - **Persistence (Async Storage):**  
@@ -194,46 +152,46 @@ app/
 - **TypeScript Typing:**  
   Interfaces (`ActionType`, `AppState`) ensure type-safe data management and reducer actions.
 
----
 
-### 3. Notifications
+
+#### 2.4. Notifications
 - **Study Reminders:** Triggered during active study sessions based on chosen interval (25/45/60 minutes).  
 - **Assignment Reminders:** Local alerts appear three days before due dates.  
 Both use **Expo Notifications API** for local scheduling.
 
----
 
-### 4. Backend Integration
+
+#### 2.5. Backend Integration
 - **Phase 0:** Offline-first model — all data stored on-device with AsyncStorage.  
 - **Phase 1 (Optional):** Add optional cloud sync for account-based data restoration and multi-device access.
 
----
 
-### 5. Deployment Plan (Expo EAS Build)
+
+#### 2.6. Deployment Plan (Expo EAS Build)
 - Deployed through **Expo EAS Build** for both Android and iOS.  
 - Tested on physical devices via **Expo Go**.  
 - Generates `.apk` and `.ipa` files for app stores or direct distribution.
 
----
 
-### 6. Advanced Features
+
+#### 2.7. Advanced Features
 - **Gamification:** Medal-based feedback (Gold, Silver, Red ❌) for completion levels.  
 - **Pedometer Integration:** Uses **Expo Pedometer** to recommend breaks after long study sessions.  
 - **Animated Progress Bars:** Smooth progress animations to visualize study or assignment completion.
 
----
 
-### 7. Fulfillment of Course Project Requirements
+
+#### 2.8. Fulfillment of Course Project Requirements
 - **Components & Navigation:** Modular React Native structure with nested Expo Router layouts.  
 - **State Management & Persistence:** useReducer + AsyncStorage showcase local data handling and rehydration.  
 - **Notifications & Sensors:** Expo Notifications and Pedometer demonstrate device integration.  
 - **Backend Integration:** Optional cloud sync design shows extendability.  
 - **Advanced Features:** Gamification, animations, and pedometer usage fulfill advanced functionality criteria.
 
----
 
-### 8. Project Scope and Feasibility
-The project is well-scoped for a **6–8 week** timeline.  
+
+#### 2.9. Project Scope and Feasibility
+The project is well-scoped for a 6–8 week timeline.  
 It emphasizes essential mobile development features—navigation, persistence, notifications, and animations—while remaining lightweight and achievable.  
 Each module is independent, enabling parallel work among team members and efficient integration.
 
