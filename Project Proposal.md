@@ -181,6 +181,9 @@ app/
 ├── types/ # Global TS types
 └── constants/ # Route names, default timer, etc.
 ```
+
+---
+
 ### 2. State Management and Persistence
 - **State Management (useReducer):**  
   Handles actions such as `ADD_SESSION`, `UPDATE_DURATION`, and `TOGGLE_TASK_COMPLETE` for predictable, centralized state updates.
