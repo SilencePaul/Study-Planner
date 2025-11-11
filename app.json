@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Study-Planner-new",
-    "slug": "Study-Planner-new",
+    "name": "Study-Planner",
+    "slug": "Study-Planner",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
