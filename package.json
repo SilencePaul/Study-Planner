@@ -1,5 +1,5 @@
 {
-  "name": "study-planner-new",
+  "name": "study-planner",
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
@@ -9,10 +9,19 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-native-community/datetimepicker": "^8.4.4",
+    "@react-native-picker/picker": "^2.11.1",
     "expo": "~54.0.23",
+    "expo-linking": "~8.0.8",
+    "expo-notifications": "^0.32.12",
+    "expo-router": "^6.0.14",
+    "expo-sensors": "~15.0.7",
     "expo-status-bar": "~3.0.8",
     "react": "19.1.0",
-    "react-native": "0.81.5"
+    "react-native": "0.81.5",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-screens": "~4.16.0"
   },
   "devDependencies": {
     "@types/react": "~19.1.0",
