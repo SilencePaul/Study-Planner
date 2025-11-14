@@ -13,39 +13,92 @@ import { StatusBar } from 'expo-status-bar';
 import { useAppContext } from '../context';
 import { Task } from '@/types';
 import { generateId } from '@/utils';
-import { lightTheme } from '@/theme';
+import { useTheme } from '@/theme/context';
+import { useLocalSearchParams } from 'expo-router';
 
+
+// Add tesk Screen
+
+// Initialize component state and context
 export default function AddSessionScreen() {
   const router = useRouter();
   const { state, dispatch } = useAppContext();
-  const theme = lightTheme;
+  const { theme, isDark } = useTheme();
 
+  // for dropdown
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const selectedAssignment = state.assignments.find(a => a.id === selectedAssignmentId);
+
+  // taskName: Stores the task name input
   const [taskName, setTaskName] = useState('');
+  // goal: Tracks completion goal (full/partial)
   const [goal, setGoal] = useState<'full' | 'partial'>('full');
+  // description: Stores optional task description
   const [description, setDescription] = useState('');
+  // selectedAssignmentId: Tracks if task comes from an assignment
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<string | undefined>();
 
-  const today = new Date().toISOString().split('T')[0];
-  let todaySession = state.sessions.find(s => s.date === today);
+  // Purpose: Determine which session to add the task to
+  const today = new Date().toLocaleDateString('en-CA');
+  const params = useLocalSearchParams<{ sessionId?: string }>();
+  const sessionId = Array.isArray(params.sessionId) ? params.sessionId[0] : params.sessionId;
+  let currentSession = sessionId
+  ? state.sessions.find(s => s.id === sessionId)
+  : state.sessions.find(s => s.date === today);
 
-  const handleSave = () => {
+  // Check if assignment is already added to current session OR is completed
+  const isAssignmentAvailable = (assignmentId: string): boolean => {
+    if (!currentSession) return false;
+    
+    const assignment = state.assignments.find(a => a.id === assignmentId);
+    
+    // Don't show if assignment is fully completed (100% progress)
+    if (assignment?.progress === 100) {
+      return false;
+    }
+    
+    // Don't show if already added to current session
+    const isAlreadyAdded = currentSession.tasks.some(task => 
+      task.assignmentId === assignmentId
+    );
+    
+    return !isAlreadyAdded;
+  };
+
+  // Filter assignments to exclude already added ones AND completed ones
+  const availableAssignments = state.assignments.filter(assignment => 
+    isAssignmentAvailable(assignment.id)
+  );
+
+    // Purpose: Validate and save the new task
+    const handleSave = () => {
     if (!taskName.trim()) {
       Alert.alert('Error', 'Please enter a task name');
       return;
     }
-
+    
+    // ADD THIS VALIDATION:
+    if (selectedAssignmentId && currentSession && !isAssignmentAvailable(selectedAssignmentId)) {
+      Alert.alert(
+        'Assignment Already Added',
+        `This assignment is already in today's session. Please select a different assignment or use a custom task.`,
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+  
     // Create today's session if it doesn't exist
-    if (!todaySession) {
-      todaySession = {
+    if (!currentSession) {
+      currentSession = {
         id: generateId(),
         date: today,
         duration: 0,
         tasks: [],
       };
-      dispatch({ type: 'ADD_SESSION', payload: todaySession });
+      dispatch({ type: 'ADD_SESSION', payload: currentSession });
     }
 
-    const newTask: Task = {
+    const newTask: Task = { // Creates task object with all form data
       id: generateId(),
       name: taskName.trim(),
       goal,
@@ -53,59 +106,116 @@ export default function AddSessionScreen() {
       description: description.trim() || undefined,
       assignmentId: selectedAssignmentId,
     };
-
-    dispatch({
+    dispatch({ // Dispatches ADD_TASK action to global state
       type: 'ADD_TASK',
-      payload: { sessionId: todaySession.id, task: newTask },
+      payload: { sessionId: currentSession.id, task: newTask },
     });
-
     router.back();
   };
 
+  // UI
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
-      <StatusBar style="auto" />
+      <StatusBar style={isDark ? 'light' : 'dark'} />
       
+      {/*  */}
+      {/* custom task or pre-existing assignment */}
       <View style={styles.content}>
-        <View style={styles.section}>
-          <Text style={[styles.label, { color: theme.colors.text }]}>Task Source</Text>
-          <View style={styles.radioGroup}>
-            <TouchableOpacity
-              style={[
-                styles.radioOption,
-                !selectedAssignmentId && styles.radioSelected,
-                { borderColor: theme.colors.primary },
-              ]}
-              onPress={() => setSelectedAssignmentId(undefined)}
-            >
-              <Text style={[styles.radioText, { color: theme.colors.text }]}>
-                Custom Task
-              </Text>
-            </TouchableOpacity>
-            {state.assignments.length > 0 && (
-              <View style={styles.assignmentList}>
-                {state.assignments.map((assignment) => (
+      <View style={styles.section}>
+        <Text style={[styles.label, { color: theme.colors.text }]}>Task Source</Text>
+        
+        {/* Custom Task Option */}
+        <TouchableOpacity
+          style={[
+            styles.radioOption,
+            { 
+              borderColor: theme.colors.primary,
+              backgroundColor: !selectedAssignmentId ? theme.colors.primary + '20' : theme.colors.surface
+            },
+          ]}
+          onPress={() => {
+            setSelectedAssignmentId(undefined);
+            setDropdownVisible(false);
+          }}
+        >
+          <Text style={[styles.radioText, { color: theme.colors.text }]}>
+            Custom Task
+          </Text>
+        </TouchableOpacity>
+
+      {/* Assignment Dropdown */}
+      {availableAssignments.length > 0 && (
+        <View style={styles.dropdownContainer}>
+          <Text style={[styles.dropdownLabel, { color: theme.colors.text }]}>
+            Select from Assignment List
+          </Text>
+          
+          {/* Dropdown Trigger */}
+          <TouchableOpacity
+            style={[
+              styles.dropdownTrigger,
+              { 
+                backgroundColor: selectedAssignmentId ? theme.colors.primary + '20' : theme.colors.surface,
+                borderColor: theme.colors.primary,
+              },
+            ]}
+            onPress={() => setDropdownVisible(!dropdownVisible)}
+          >
+            <Text style={[
+              styles.dropdownTriggerText, 
+              { color: selectedAssignmentId ? theme.colors.text : theme.colors.textSecondary }
+            ]}>
+              {selectedAssignmentId 
+                ? state.assignments.find(a => a.id === selectedAssignmentId)?.name 
+                : "Choose an assignment..."}
+            </Text>
+            <Text style={[styles.dropdownArrow, { color: theme.colors.text }]}>
+              {dropdownVisible ? '▲' : '▼'}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Dropdown List */}
+          {dropdownVisible && (
+            <View style={[
+              styles.dropdownList,
+              { 
+                backgroundColor: theme.colors.surface,
+                borderColor: theme.colors.border,
+              },
+            ]}>
+              <ScrollView 
+                style={styles.dropdownScrollView}
+                nestedScrollEnabled={true}
+              >
+                {availableAssignments.map((assignment) => (
                   <TouchableOpacity
                     key={assignment.id}
                     style={[
-                      styles.radioOption,
-                      selectedAssignmentId === assignment.id && styles.radioSelected,
-                      { borderColor: theme.colors.primary },
+                      styles.dropdownItem,
+                      selectedAssignmentId === assignment.id && styles.dropdownItemSelected,
                     ]}
-                    onPress={() => setSelectedAssignmentId(assignment.id)}
+                    onPress={() => {
+                      setSelectedAssignmentId(assignment.id);
+                      setDropdownVisible(false);
+                      setTaskName(assignment.name);
+                    }}
                   >
-                    <Text style={[styles.radioText, { color: theme.colors.text }]}>
+                    <Text style={[styles.dropdownItemText, { color: theme.colors.text }]}>
                       {assignment.name}
                     </Text>
                   </TouchableOpacity>
                 ))}
-              </View>
-            )}
-          </View>
+              </ScrollView>
+            </View>
+          )}
         </View>
-
+      )}
+        
+      </View>
+        
+        {/* Purpose: the task name */}
         <View style={styles.section}>
           <Text style={[styles.label, { color: theme.colors.text }]}>Task Name</Text>
           <TextInput
@@ -123,28 +233,36 @@ export default function AddSessionScreen() {
             placeholderTextColor={theme.colors.textSecondary}
           />
         </View>
-
+        
+        {/* Goal Selection */}
         <View style={styles.section}>
           <Text style={[styles.label, { color: theme.colors.text }]}>
             Completion Goal
           </Text>
           <View style={styles.radioGroup}>
+            {/* Full Goal Option */}
             <TouchableOpacity
               style={[
                 styles.goalOption,
-                goal === 'full' && styles.goalSelected,
-                { borderColor: theme.colors.primary },
+                { 
+                  borderColor: theme.colors.primary,
+                  backgroundColor: goal === 'full' ? theme.colors.primary + '20' : theme.colors.surface
+                },
               ]}
               onPress={() => setGoal('full')}
             >
               <Text style={styles.goalEmoji}>🟢</Text>
               <Text style={[styles.goalText, { color: theme.colors.text }]}>Full</Text>
             </TouchableOpacity>
+
+            {/* Partial Goal Option */}
             <TouchableOpacity
               style={[
                 styles.goalOption,
-                goal === 'partial' && styles.goalSelected,
-                { borderColor: theme.colors.primary },
+                { 
+                  borderColor: theme.colors.primary,
+                  backgroundColor: goal === 'partial' ? theme.colors.primary + '20' : theme.colors.surface
+                },
               ]}
               onPress={() => setGoal('partial')}
             >
@@ -154,6 +272,7 @@ export default function AddSessionScreen() {
           </View>
         </View>
 
+        {/* Description Section */}
         <View style={styles.section}>
           <Text style={[styles.label, { color: theme.colors.text }]}>
             Description (Optional)
@@ -175,20 +294,21 @@ export default function AddSessionScreen() {
             numberOfLines={4}
           />
         </View>
-
+            
+        {/* Action Buttons */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={[styles.saveButton, { backgroundColor: theme.colors.primary }]}
             onPress={handleSave}
           >
-            <Text style={styles.buttonText}>✅ Save</Text>
+            <Text style={styles.buttonText}>Save</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.cancelButton, { borderColor: theme.colors.error }]}
             onPress={() => router.back()}
           >
             <Text style={[styles.cancelButtonText, { color: theme.colors.error }]}>
-              ❌ Cancel
+              Cancel
             </Text>
           </TouchableOpacity>
         </View>
@@ -203,6 +323,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
+    position: 'relative',
   },
   section: {
     marginBottom: 24,
@@ -235,7 +356,6 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   radioSelected: {
-    backgroundColor: '#E3F2FD',
   },
   radioText: {
     fontSize: 16,
@@ -253,7 +373,6 @@ const styles = StyleSheet.create({
     // child spacing handled via margin
   },
   goalSelected: {
-    backgroundColor: '#E3F2FD',
   },
   goalEmoji: {
     fontSize: 24,
@@ -272,7 +391,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -286,5 +404,64 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+  // for dropdown
+  dropdownContainer: {
+  marginTop: 12,
+  zIndex: 1, // Ensure dropdown appears above other content
+},
+dropdownLabel: {
+  fontSize: 14,
+  fontWeight: '500',
+  marginBottom: 8,
+},
+dropdownTrigger: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  borderWidth: 1,
+  borderRadius: 8,
+  padding: 12,
+  zIndex: 2,
+},
+dropdownTriggerText: {
+  fontSize: 16,
+  flex: 1,
+},
+dropdownArrow: {
+  fontSize: 12,
+  marginLeft: 8,
+},
+dropdownList: {
+  position: 'absolute',
+  top: '100%', // Position below the trigger
+  left: 0,
+  right: 0,
+  borderWidth: 1,
+  borderTopWidth: 0,
+  borderBottomLeftRadius: 8,
+  borderBottomRightRadius: 8,
+  maxHeight: 200,
+  shadowColor: '#000',
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.25,
+  shadowRadius: 3.84,
+  elevation: 5, // For Android
+  zIndex: 1000, // High z-index to appear above everything
+},
+dropdownScrollView: {
+  maxHeight: 200,
+},
+dropdownItem: {
+  padding: 12,
+  borderBottomWidth: 1,
+},
+dropdownItemSelected: {
+},
+dropdownItemText: {
+  fontSize: 16,
+},
 });
 

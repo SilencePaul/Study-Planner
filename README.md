@@ -1,51 +1,51 @@
-# Study-Planner
-my-app/<br>
-├── app/<br>
-│   ├── _layout.tsx<br>
-│   ├── index.tsx<br>
-│   ├── +not-found.tsx<br>
-│   ├── context.tsx<br>
-│   ├── assignments/<br>
-│   │   ├── _layout.tsx<br>
-│   │   ├── index.tsx<br>
-│   │   ├── [id].tsx<br>
-│   │   └── new.tsx<br>
-│   ├── Detail/<br>
-│   │   └── [id].tsx<br>
-│   ├── session/<br>
-│   │   └── add.tsx<br>
-│   └── settings/<br>
-│       └── index.tsx<br>
-├── assets/<br>
-│   ├── adaptive-icon.png<br>
-│   ├── favicon.png<br>
-│   ├── icon.png<br>
-│   ├── notification-icon.png<br>
-│   ├── splash-icon.png<br>
-│   └── splash.png<br>
-├── components/<br>
-│   ├── Badge.tsx<br>
-│   └── ProgressBar.tsx<br>
-├── constants/<br>
-│   └── index.tsx<br>
-├── features/<br>
-│   └── reducer.ts<br>
-├── services/<br>
-│   ├── api.ts<br>
-│   ├── notifications.ts<br>
-│   └── storage.ts<br>
-├── theme/<br>
-│   ├── context.tsx<br>
-│   └── index.ts<br>
-├── types/<br>
-│   └── index.tsx<br>
-├── utils/<br>
-│   └── index.ts<br>
-├── App.tsx<br>
-├── app.json<br>
-├── index.ts<br>
-├── package.json<br>
-├── package-lock.json<br>
-└── tsconfig.json<br>
+my-app/
+├── app/
+│   ├── _layout.tsx
+│   ├── index.tsx
+│   ├── +not-found.tsx
+│   ├── context.tsx
+│   ├── assignments/
+│   │   ├── _layout.tsx
+│   │   ├── index.tsx
+│   │   ├── [id].tsx
+│   │   └── new.tsx
+│   ├── Detail/
+│   │   └── [id].tsx
+│   ├── session/
+│   │   └── add.tsx
+│   └── settings/
+│       └── index.tsx
+├── assets/
+│   ├── adaptive-icon.png
+│   ├── favicon.png
+│   ├── icon.png
+│   ├── notification-icon.png
+│   ├── splash-icon.png
+│   └── splash.png
+├── components/
+│   ├── Badge.tsx
+│   └── ProgressBar.tsx
+├── constants/
+│   └── index.tsx
+├── features/
+│   └── reducer.ts
+├── services/
+│   ├── api.ts
+│   ├── notifications.ts
+│   └── storage.ts
+├── theme/
+│   ├── context.tsx
+│   └── index.ts
+├── types/
+│   └── index.tsx
+├── utils/
+│   └── index.ts
+├── App.tsx
+├── app.json
+├── index.ts
+├── package.json
+├── package-lock.json
+└── tsconfig.json
 
-npx expo start <br>
+
+npx expo start 

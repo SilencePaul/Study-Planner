@@ -2,87 +2,248 @@ import * as Notifications from 'expo-notifications';
 import { Assignment } from '@/types';
 import { getDaysUntilDue } from '@/utils';
 
+// Configure notifications properly
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
-    shouldShowBanner: true,
-    shouldShowList: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
-  }),
+    shouldShowBanner: true,       // ← Add this
+  } as Notifications.NotificationBehavior),
 });
 
+// Improved permission request
 export const requestPermissions = async (): Promise<boolean> => {
-  const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  let finalStatus = existingStatus;
-  
-  if (existingStatus !== 'granted') {
+  try {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    
+    if (existingStatus === 'granted') {
+      return true;
+    }
+
     const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
+    return status === 'granted';
+  } catch (error) {
+    console.error('Error requesting notification permissions:', error);
+    return false;
   }
-  
-  return finalStatus === 'granted';
 };
 
+// Check if permissions are granted
+export const checkPermissions = async (): Promise<boolean> => {
+  try {
+    const { status } = await Notifications.getPermissionsAsync();
+    return status === 'granted';
+  } catch (error) {
+    console.error('Error checking notification permissions:', error);
+    return false;
+  }
+};
+
+// Improved study reminder scheduling
 export const scheduleStudyReminder = async (
   intervalMinutes: number,
   sessionId: string
 ): Promise<string | null> => {
   try {
-    const identifier = await Notifications.scheduleNotificationAsync({
+    // Check permissions first
+    const hasPermission = await checkPermissions();
+    if (!hasPermission) {
+      console.warn('Notification permissions not granted');
+      return null;
+    }
+
+    // Validate interval
+    if (intervalMinutes < 1) {
+      console.error('Interval must be at least 1 minute');
+      return null;
+    }
+
+    const identifier = `study-reminder-${sessionId}-${Date.now()}`;
+    
+    await Notifications.scheduleNotificationAsync({
       content: {
-        title: 'Study Reminder',
-        body: `Take a break! You've been studying for ${intervalMinutes} minutes.`,
-        sound: true,
+        title: '📚 Study Reminder',
+        body: `Time to study! You scheduled a reminder for every ${intervalMinutes} minutes.`,
+        sound: 'default',
+        data: { 
+          sessionId, 
+          type: 'study-reminder',
+          intervalMinutes 
+        },
       },
       trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
         seconds: intervalMinutes * 60,
-        repeats: false,
-      },
+        repeats: true,
+      } as Notifications.TimeIntervalTriggerInput,
     });
+    
+    console.log('✅ Study reminder scheduled:', identifier, 'every', intervalMinutes, 'minutes');
     return identifier;
   } catch (error) {
-    console.error('Error scheduling study reminder:', error);
+    console.error('❌ Error scheduling study reminder:', error);
     return null;
   }
 };
 
-export const scheduleAssignmentReminders = async (
-  assignments: Assignment[]
-): Promise<void> => {
-  // Cancel all existing assignment reminders
-  await Notifications.cancelAllScheduledNotificationsAsync();
-  
-  const now = Date.now();
-  
-  for (const assignment of assignments) {
-    const daysUntilDue = getDaysUntilDue(assignment.dueDate);
+// Improved cancellation with better filtering
+export const cancelStudyReminders = async (sessionId: string): Promise<void> => {
+  try {
+    const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
     
-    // Schedule reminder 3 days before due date
-    if (daysUntilDue === 3) {
-      const dueDate = new Date(assignment.dueDate);
-      const reminderDate = new Date(dueDate);
-      reminderDate.setDate(reminderDate.getDate() - 3);
-      
-      if (reminderDate.getTime() > now) {
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: 'Assignment Due Soon',
-            body: `${assignment.name} is due in 3 days!`,
-            sound: true,
-          },
-          trigger: {
-            type: Notifications.SchedulableTriggerInputTypes.DATE,
-            date: reminderDate,
-          },
-        });
-      }
+    const studyReminders = scheduledNotifications.filter(notification => {
+      const data = notification.content.data as any;
+      return data?.sessionId === sessionId && data?.type === 'study-reminder';
+    });
+    
+    for (const reminder of studyReminders) {
+      await Notifications.cancelScheduledNotificationAsync(reminder.identifier);
+      console.log('Cancelled reminder:', reminder.identifier);
     }
+    
+  } catch (error) {
+    console.error('Error cancelling study reminders:', error);
+    throw error;
   }
 };
 
-export const cancelNotification = async (identifier: string): Promise<void> => {
-  await Notifications.cancelScheduledNotificationAsync(identifier);
+// Improved update function
+export const updateStudyReminder = async (
+  sessionId: string, 
+  intervalMinutes: number | undefined
+): Promise<string | null> => {
+  try {
+    // Always cancel existing reminders first
+    await cancelStudyReminders(sessionId);
+    
+    // If no interval specified, just cancel (return null)
+    if (!intervalMinutes || intervalMinutes < 1) {
+      console.log('Study reminders cancelled for session:', sessionId);
+      return null;
+    }
+    
+    // Schedule new reminder with validated interval
+    return await scheduleStudyReminder(intervalMinutes, sessionId);
+  } catch (error) {
+    console.error('Error updating study reminder:', error);
+    return null;
+  }
 };
 
+// Improved assignment reminders with proper date triggers
+export const scheduleAssignmentReminders = async (assignments: Assignment[]): Promise<void> => {
+  try {
+    // Check permissions
+    const hasPermission = await checkPermissions();
+    if (!hasPermission) {
+      console.warn('Cannot schedule assignment reminders - permissions not granted');
+      return;
+    }
+
+    // Cancel existing assignment reminders
+    const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
+    const assignmentReminders = scheduledNotifications.filter(notification => {
+      const data = notification.content.data as any;
+      return data?.type === 'assignment-reminder';
+    });
+    
+    for (const reminder of assignmentReminders) {
+      await Notifications.cancelScheduledNotificationAsync(reminder.identifier);
+    }
+
+    const now = Date.now();
+    
+    for (const assignment of assignments) {
+      const daysUntilDue = getDaysUntilDue(assignment.dueDate);
+      
+      // Schedule reminder 1 day before due date
+      if (daysUntilDue === 1) {
+        const dueDate = new Date(assignment.dueDate);
+        const reminderDate = new Date(dueDate);
+        reminderDate.setDate(reminderDate.getDate() - 1);
+        reminderDate.setHours(9, 0, 0, 0); // 9 AM day before
+        
+        if (reminderDate.getTime() > now) {
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: '📝 Assignment Due Tomorrow!',
+              body: `${assignment.name} is due tomorrow!`,
+              sound: 'default',
+              data: { 
+                assignmentId: assignment.id, 
+                type: 'assignment-reminder' 
+              },
+            },
+            trigger: {
+              date: reminderDate.getTime(),
+            } as Notifications.DateTriggerInput,
+          });
+          console.log('Scheduled tomorrow reminder for:', assignment.name);
+        }
+      }
+      
+      // Schedule reminder on due date
+      if (daysUntilDue === 0) {
+        const dueDate = new Date(assignment.dueDate);
+        dueDate.setHours(9, 0, 0, 0); // 9 AM on due date
+        
+        if (dueDate.getTime() > now) {
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: '📝 Assignment Due Today!',
+              body: `${assignment.name} is due today!`,
+              sound: 'default',
+              data: { 
+                assignmentId: assignment.id, 
+                type: 'assignment-reminder' 
+              },
+            },
+            trigger: {
+              date: dueDate.getTime(),
+            } as Notifications.DateTriggerInput,
+          });
+          console.log('Scheduled today reminder for:', assignment.name);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error scheduling assignment reminders:', error);
+    throw error;
+  }
+};
+
+// Single notification cancellation
+export const cancelNotification = async (identifier: string): Promise<void> => {
+  try {
+    await Notifications.cancelScheduledNotificationAsync(identifier);
+  } catch (error) {
+    console.error('Error cancelling notification:', error);
+    throw error;
+  }
+};
+
+// Cancel all notifications (useful for logout/reset)
+export const cancelAllNotifications = async (): Promise<void> => {
+  try {
+    await Notifications.cancelAllScheduledNotificationsAsync();
+    console.log('All notifications cancelled');
+  } catch (error) {
+    console.error('Error cancelling all notifications:', error);
+    throw error;
+  }
+};
+
+// Initialize notifications
+export const initializeNotifications = async (): Promise<boolean> => {
+  return await requestPermissions();
+};
+
+// Get all scheduled notifications (for debugging)
+export const getScheduledNotifications = async (): Promise<Notifications.NotificationRequest[]> => {
+  try {
+    return await Notifications.getAllScheduledNotificationsAsync();
+  } catch (error) {
+    console.error('Error getting scheduled notifications:', error);
+    return [];
+  }
+};

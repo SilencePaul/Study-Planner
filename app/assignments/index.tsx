@@ -12,7 +12,6 @@ import { useAppContext } from '../context';
 import { Assignment } from '@/types';
 import { formatDate, getDaysUntilDue, sortByDueDate } from '@/utils';
 import { ProgressBar } from '@/components/ProgressBar';
-import { lightTheme } from '@/theme';
 import { useTheme } from '@/theme/context';
 
 export default function ManageAssignmentsScreen() {
@@ -30,19 +29,40 @@ export default function ManageAssignmentsScreen() {
     const daysUntilDue = getDaysUntilDue(item.dueDate);
     const isOverdue = daysUntilDue < 0;
     const isDueSoon = daysUntilDue <= 3 && daysUntilDue >= 0;
+    const isCompleted = item.progress === 100;
 
     return (
-      <View style={[styles.assignmentItem, { backgroundColor: theme.colors.surface }]}>
+      <View style={[
+        styles.assignmentItem, 
+        { 
+          backgroundColor: theme.colors.surface,
+          borderLeftWidth: 4,
+          borderLeftColor: isCompleted ? theme.colors.success : 'transparent'
+        }
+      ]}>
         <View style={styles.assignmentHeader}>
           <View style={styles.assignmentInfo}>
-            <Text style={[styles.assignmentName, { color: theme.colors.text }]}>
+            <Text style={[
+              styles.assignmentName, 
+              { 
+                color: isCompleted ? theme.colors.success : theme.colors.text,
+                textDecorationLine: isCompleted ? 'line-through' : 'none'
+              }
+            ]}>
               {item.name}
+              {isCompleted && (
+                <Text style={{ color: theme.colors.success, fontSize: 12 }}>
+                  {' (Finished)'}
+                </Text>
+              )}
             </Text>
             <Text
               style={[
                 styles.dueDate,
                 {
-                  color: isOverdue
+                  color: isCompleted 
+                    ? theme.colors.success 
+                    : isOverdue
                     ? theme.colors.error
                     : isDueSoon
                     ? theme.colors.warning
@@ -51,8 +71,9 @@ export default function ManageAssignmentsScreen() {
               ]}
             >
               Due: {formatDate(item.dueDate)}
-              {isOverdue && ' (Overdue)'}
-              {isDueSoon && !isOverdue && ` (${daysUntilDue} days left)`}
+              {isOverdue && !isCompleted && ' (Overdue)'}
+              {isDueSoon && !isOverdue && !isCompleted && ` (${daysUntilDue} days left)`}
+              {isCompleted && ' (Completed)'}
             </Text>
           </View>
           <TouchableOpacity
@@ -63,8 +84,14 @@ export default function ManageAssignmentsScreen() {
           </TouchableOpacity>
         </View>
         <View style={styles.progressContainer}>
-          <Text style={[styles.progressLabel, { color: theme.colors.textSecondary }]}>
+          <Text style={[
+            styles.progressLabel, 
+            { 
+              color: isCompleted ? theme.colors.success : theme.colors.textSecondary 
+            }
+          ]}>
             Progress: {item.progress}%
+            {isCompleted && ' 🎉'}
           </Text>
           <ProgressBar progress={item.progress} theme={theme} animated />
         </View>

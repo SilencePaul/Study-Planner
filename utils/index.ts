@@ -19,12 +19,14 @@ export const formatTime = (minutes: number): string => {
   return `${mins} min`;
 };
 
+
 export const formatTimer = (seconds: number): string => {
   const hours = Math.floor(seconds / 3600);
   const mins = Math.floor((seconds % 3600) / 60);
   const secs = seconds % 60;
   return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 };
+
 
 export const getCompletionStatus = (session: Session): CompletionStatus => {
   if (session.tasks.length === 0) return 'red';

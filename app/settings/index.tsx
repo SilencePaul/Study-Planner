@@ -1,3 +1,4 @@
+// SettingsScreen.tsx 
 import React from 'react';
 import {
   View,
@@ -8,12 +9,12 @@ import {
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useAppContext } from '../context';
-import { lightTheme } from '@/theme';
+import { useTheme } from '@/theme/context'; // Import useTheme hook
 import { requestPermissions } from '@/services/notifications';
 
 export default function SettingsScreen() {
   const { state, dispatch } = useAppContext();
-  const theme = lightTheme;
+  const { theme, isDark } = useTheme(); // Get dynamic theme from context
 
   const handleNotificationToggle = async (value: boolean) => {
     if (value) {
@@ -35,16 +36,9 @@ export default function SettingsScreen() {
     });
   };
 
-  const handlePedometerToggle = (value: boolean) => {
-    dispatch({
-      type: 'UPDATE_SETTINGS',
-      payload: { pedometerEnabled: value },
-    });
-  };
-
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <StatusBar style="auto" />
+      <StatusBar style={isDark ? 'light' : 'dark'} />
       
       <View style={styles.content}>
         <View style={styles.section}>
@@ -59,6 +53,7 @@ export default function SettingsScreen() {
               value={state.settings.notificationsEnabled}
               onValueChange={handleNotificationToggle}
               trackColor={{ false: '#767577', true: theme.colors.primary }}
+              thumbColor={state.settings.notificationsEnabled ? theme.colors.primary : '#f4f3f4'}
             />
           </View>
         </View>
@@ -71,62 +66,70 @@ export default function SettingsScreen() {
             <TouchableOpacity
               style={[
                 styles.themeOption,
-                state.settings.theme === 'light' && styles.themeOptionSelected,
+                state.settings.theme === 'light' && [
+                  styles.themeOptionSelected,
+                  { backgroundColor: theme.colors.primary + '20' }
+                ],
                 { borderColor: theme.colors.primary },
               ]}
               onPress={() => handleThemeChange('light')}
             >
-              <Text style={[styles.themeOptionText, { color: theme.colors.text }]}>
+              <Text style={[
+                styles.themeOptionText, 
+                { 
+                  color: theme.colors.text,
+                  fontWeight: state.settings.theme === 'light' ? 'bold' : 'normal'
+                }
+              ]}>
                 Light
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
                 styles.themeOption,
-                state.settings.theme === 'dark' && styles.themeOptionSelected,
+                state.settings.theme === 'dark' && [
+                  styles.themeOptionSelected,
+                  { backgroundColor: theme.colors.primary + '20' }
+                ],
                 { borderColor: theme.colors.primary },
               ]}
               onPress={() => handleThemeChange('dark')}
             >
-              <Text style={[styles.themeOptionText, { color: theme.colors.text }]}>
+              <Text style={[
+                styles.themeOptionText, 
+                { 
+                  color: theme.colors.text,
+                  fontWeight: state.settings.theme === 'dark' ? 'bold' : 'normal'
+                }
+              ]}>
                 Dark
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
                 styles.themeOption,
-                state.settings.theme === 'auto' && styles.themeOptionSelected,
+                state.settings.theme === 'auto' && [
+                  styles.themeOptionSelected,
+                  { backgroundColor: theme.colors.primary + '20' }
+                ],
                 { borderColor: theme.colors.primary },
               ]}
               onPress={() => handleThemeChange('auto')}
             >
-              <Text style={[styles.themeOptionText, { color: theme.colors.text }]}>
+              <Text style={[
+                styles.themeOptionText, 
+                { 
+                  color: theme.colors.text,
+                  fontWeight: state.settings.theme === 'auto' ? 'bold' : 'normal'
+                }
+              ]}>
                 Auto
               </Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-            Sensors
-          </Text>
-          <View style={styles.settingRow}>
-            <View>
-              <Text style={[styles.settingLabel, { color: theme.colors.text }]}>
-                Pedometer (Break Suggestions)
-              </Text>
-              <Text style={[styles.settingDescription, { color: theme.colors.textSecondary }]}>
-                Get reminders to take breaks after long study sessions
-              </Text>
-            </View>
-            <Switch
-              value={state.settings.pedometerEnabled}
-              onValueChange={handlePedometerToggle}
-              trackColor={{ false: '#767577', true: theme.colors.primary }}
-            />
-          </View>
-        </View>
+        
       </View>
     </View>
   );
@@ -150,7 +153,7 @@ const styles = StyleSheet.create({
   settingRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingVertical: 12,
   },
   settingLabel: {
@@ -164,7 +167,7 @@ const styles = StyleSheet.create({
   },
   themeOptions: {
     flexDirection: 'row',
-    // spacing handled with margins on children
+    gap: 8, // Better spacing
   },
   themeOption: {
     flex: 1,
@@ -172,13 +175,20 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 16,
     alignItems: 'center',
+    marginHorizontal: 4,
   },
   themeOptionSelected: {
-    backgroundColor: '#E3F2FD',
+    // Background color is now set dynamically
   },
   themeOptionText: {
     fontSize: 16,
     fontWeight: '500',
   },
+  settingTextContainer: {
+    flex: 1, // Take up all available space
+    marginRight: 16, // Space between text and switch
+  },
+  switchContainer: {
+    marginTop: 6, // Align switch better with text
+  },
 });
-

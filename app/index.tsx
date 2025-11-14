@@ -7,24 +7,28 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter } from 'expo-router'; // Navigation hook
 import { StatusBar } from 'expo-status-bar';
-import { useAppContext } from './context';
+import { useAppContext } from './context'; // Global state management
 import { Session } from '@/types';
-import { formatDate, formatTime, getCompletionStatus } from '@/utils';
+import { formatDate, formatTime, formatTimer, getCompletionStatus } from '@/utils';// Helper functions
 import { Badge } from '@/components/Badge';
-import { lightTheme } from '@/theme';
+import { useTheme } from '@/theme/context';
+
+
+//Main screen that displays study sessions and 
+// provides navigation to other features.
 
 export const options = {
-  title: 'Home',
-  headerShown: true,
+  title: 'Study Sessions',
+  headerShown: true,// Shows native header with back button
 };
 
 export default function HomeScreen() {
-  console.log('HomeScreen component is rendering!');
-  const router = useRouter();
-  const { state, dispatch } = useAppContext();
-  const theme = lightTheme; // TODO: Implement theme switching
+  console.log('HomeScreen component is rendering!');// Debug logging
+  const router = useRouter();// Navigation instance
+  const { state, dispatch } = useAppContext();//global app state && update
+  const { theme, isDark } = useTheme();
   
   console.log('HomeScreen - State loaded:', { sessionsCount: state.sessions.length });
 
@@ -35,8 +39,7 @@ export default function HomeScreen() {
       [
         { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Delete',
-          style: 'destructive',
+          text: 'Delete', style: 'destructive',
           onPress: () => {
             dispatch({ type: 'DELETE_SESSION', payload: sessionId });
           },
@@ -45,29 +48,40 @@ export default function HomeScreen() {
     );
   };
 
-  const renderSessionItem = ({ item }: { item: Session }) => {
-    const status = getCompletionStatus(item);
-    
+  {/* Takes panel */}
+  const renderSessionItem = ({ item }: { item: Session }) => { // Takes an object with item property of type Session
+    const status = getCompletionStatus(item); // currnet status
+    // Get timer from global state
+    const sessionTimer = (state.activeTimers && state.activeTimers[item.id]) || 0;
+
     return (
-      <TouchableOpacity
+      // one task panel
+      <TouchableOpacity // style of card
         style={[styles.sessionItem, { backgroundColor: theme.colors.surface }]}
         onPress={() => router.push(`/Detail/${item.id}`)}
       >
-        <View style={styles.sessionHeader}>
-          <View>
-            <Text style={[styles.dateText, { color: theme.colors.text }]}>
-              {formatDate(item.date)}
-            </Text>
-            <Text style={[styles.durationText, { color: theme.colors.textSecondary }]}> 
-              {formatTime(item.duration)}    {item.tasks.length} tasks
-            </Text>
-          </View>
+        {/* Main content */}
+        <View style={{ flex: 1 }}>
+          <Text style={[styles.dateText, { color: theme.colors.text }]}>
+            {formatDate(item.date)}
+          </Text>
+          {/* timer */} 
+          <Text style={[styles.durationText, { color: theme.colors.text }]}>
+            {formatTimer(sessionTimer)}  -  {item.tasks.length} tasks
+          </Text>
+        </View>
+        
+        {/* Badge / dot positioned absolutely */}
+        <View style={styles.badgeWrapper}>
           <Badge status={status} theme={theme} />
         </View>
+
+        {/* Delete button stays at bottom */}
         <TouchableOpacity
           onPress={() => handleDeleteSession(item.id)}
           style={styles.deleteButton}
         >
+
           <Text style={styles.deleteText}>Delete</Text>
         </TouchableOpacity>
       </TouchableOpacity>
@@ -76,8 +90,9 @@ export default function HomeScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <StatusBar style="auto" />
+      <StatusBar style={isDark ? 'light' : 'dark'} />
       
+      {/*empty panel list*/}
       <FlatList
         data={state.sessions}
         keyExtractor={(item) => item.id}
@@ -92,31 +107,38 @@ export default function HomeScreen() {
         }
       />
 
+      {/*create new study record button*/}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={[styles.primaryButton, { backgroundColor: theme.colors.primary }]}
           onPress={() => {
-            const today = new Date().toISOString().split('T')[0];
+            // Home screen: create session with full ISO datetime
+            const now = new Date();
+            const todayIso = now.toISOString();
+
             const newSession: Session = {
               id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-              date: today,
+              date: todayIso,
               duration: 0,
               tasks: [],
             };
             dispatch({ type: 'ADD_SESSION', payload: newSession });
-            router.push(`/Detail/${newSession.id}`);
+            router.push(`/Detail/${newSession.id}?isNew=true`);
           }}
         >
           <Text style={styles.buttonText}>Create New Study Record</Text>
         </TouchableOpacity>
 
+        {/**/}
+        {/*manage assignment button*/}
         <TouchableOpacity
           style={[styles.secondaryButton, { borderColor: theme.colors.primary }]}
           onPress={() => router.push('/assignments')}
         >
           <Text style={[styles.secondaryButtonText, { color: theme.colors.primary }]}>Manage Assignments</Text>
         </TouchableOpacity>
-
+        
+        {/*settings button*/}
         <TouchableOpacity
           style={[styles.secondaryButton, { borderColor: theme.colors.primary }]}
           onPress={() => router.push('/settings')}
@@ -133,31 +155,37 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContent: {
-    padding: 16,
+    padding: 12,
   },
   sessionItem: {
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
+    padding: 12,
+    borderRadius: 6,
+    marginBottom: 6,
     borderWidth: 1,
     borderColor: '#E0E0E0',
+    height: 130,
+    // 保证子元素绝对定位仍然可见
+    overflow: 'visible',        // <-- 允许子元素超出可见区域
+    position: 'relative',       // <-- 为绝对定位的子元素提供参考定位上下文
+    //backgroundColor: '#fff',
   },
   sessionHeader: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
   },
-  dateText: {
-    fontSize: 16,
+  dateText: { // for date one top of each study panel.
+    fontSize: 20,
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: 10,
   },
-  durationText: {
-    fontSize: 14,
+  durationText: { // 
+    fontSize: 35, 
+    fontWeight: '500',
   },
   deleteButton: {
-    padding: 8,
+    padding: 3,
     alignSelf: 'flex-end',
   },
   deleteText: {
@@ -174,16 +202,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   buttonContainer: {
-    padding: 16,
+    padding: 10,
     // spacing via margins on children
     borderTopWidth: 1,
     borderTopColor: '#E0E0E0',
   },
   primaryButton: {
-    padding: 16,
+    padding: 12,
     borderRadius: 8,
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 5,
   },
   buttonText: {
     color: '#FFFFFF',
@@ -191,14 +219,20 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   secondaryButton: {
-    padding: 16,
+    padding: 10,
     borderRadius: 8,
     alignItems: 'center',
     borderWidth: 1,
-    marginBottom: 12,
+    marginBottom: 5,
   },
   secondaryButtonText: {
     fontSize: 16,
     fontWeight: '600',
   },
+  badgeWrapper: { // for badge(dot)
+  position: 'absolute', // float in corner
+  top: 12,
+  right: 12,
+  zIndex: 10,           // make sure it renders above other content
+},
 });
