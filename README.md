@@ -270,5 +270,83 @@ my-app/
 ├── package-lock.json
 └── tsconfig.json
 ```
+## 8. Deployment Information
 
-npx expo start 
+There are several ways to deploy or distribute the Study Planner App.
+
+### 8.1 Expo Build Link (Recommended)
+Publish the app using Expo and include the public link:
+
+```css
+https://expo.dev/@your-username/study-planner
+```
+
+This allows instructors to open the app directly in Expo Go.
+
+### 8.2 Android APK (EAS Build)
+To generate an Android APK:
+
+```bash
+eas build --platform android
+```
+After the build completes, provide the download link to the APK file.
+
+### 8.3 iOS IPA (EAS Build)
+To generate an iOS archive:
+```bash
+eas build --platform ios
+```
+
+Provide the generated IPA or TestFlight link.
+
+### 8.4 Local Execution Option
+If needed, reviewers can run the app locally:
+
+```bash
+npm install
+npx expo start
+```
+
+
+They can launch the app through a simulator or Expo Go on a physical device.
+
+
+## 9. Individual Contributions
+
+### Member A
+- Implemented the Home screen interface and logic.
+- Developed the study timer system (start, pause, reset).
+- Implemented the reminder interval logic and local notification triggers.
+- Added break suggestion logic and study tips integration.
+
+### Member B
+- Developed the Assignment module (list, create, edit, delete).
+- Designed and implemented assignment progress calculation.
+- Built reusable UI components: ProgressBar and Badge.
+- Implemented due date color coding and sorting behavior.
+
+### Member C
+- Designed global state architecture using Context API + useReducer.
+- Implemented persistent storage with AsyncStorage wrapper.
+- Built the theme system (light, dark, auto modes).
+- Integrated screens with global state and routing.
+- Performed debugging and device testing.
+
+
+## 10. Lessons Learned and Concluding Remarks
+
+Throughout the development process, the team gained practical experience with mobile development using React Native and Expo. Key takeaways include:
+
+- Modeling global application state using Context API and useReducer.
+- Designing scalable navigation structures with Expo Router.
+- Persisting data reliably using AsyncStorage and a custom wrapper.
+- Implementing asynchronous behavior for timers, reminders, and notifications.
+- Handling permissions and differences across platforms.
+- Creating responsive, theme-aware UI components.
+- Debugging UI and logic issues across Android/iOS devices.
+- Collaborating through Git and maintaining clean modular architecture.
+
+The completed Study Planner App meets all project objectives and provides a practical tool for students to organize their study routines more effectively. This project strengthened our skills in mobile UI/UX design, state management, asynchronous programming, and teamwork. We are satisfied with the final outcome and the learning achieved during development.
+
+
+
