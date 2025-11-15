@@ -71,8 +71,156 @@ We wanted to build a lightweight and academically-focused productivity applicati
 - expo-status-bar  
 - expo-router  
 
+## 5. Features
 
+### 5.1 Study Sessions
+- Create daily study sessions.
+- Built-in timer (start, pause, reset).
+- Automatic duration updates based on timer seconds.
+- Break suggestions after long study periods.
+- Add tasks within a session.
+- Toggle task completion.
+- Delete tasks.
+- Link tasks to related assignments.
+- Completion badges (Gold, Silver, Incomplete).
+- Select reminder interval (None, 5, 15, 30 minutes).
+- Display study tips fetched from API.
 
+### 5.2 Tasks
+- Each task contains:
+  - A name
+  - A goal type (full or partial)
+  - Optional description
+  - Optional assignment link
+- Full tasks contribute 100% to the linked assignment.
+- Partial tasks contribute 30% each (up to 90% max without a full task).
+
+### 5.3 Assignments
+- Create assignments with name and due date.
+- Edit previously created assignments.
+- Delete assignments when no longer needed.
+- Assignments are sorted automatically by due date.
+- Color-coded urgency states:
+  - Overdue
+  - Due soon
+  - Normal
+  - Completed
+- Assignment progress is updated automatically based on related tasks.
+- Progress is shown with an animated progress bar component.
+
+### 5.4 Themes
+- Light mode.
+- Dark mode.
+- Auto mode (follows system setting).
+- Entire app responds to theme changes dynamically.
+
+### 5.5 Notifications
+- Local reminders based on the selected interval.
+- Full permission checking and requesting.
+- Notification debugging supported through scheduled-notification logging.
+- Uses expo-notifications for all notification logic.
+
+### 5.6 Persistent Storage
+All data is saved locally, including:
+- Study sessions
+- Tasks
+- Assignments
+- Active timers
+- Notification settings
+- User theme preferences
+- Reminder interval preferences
+
+Saved using a custom AsyncStorage wrapper for reliability and clean API usage.
+
+---
+
+## 6. User Guide
+
+### 6.1 Home Screen
+- Displays all study sessions for the user.
+- “Create New Study Record” generates a session for the current day.
+- Sessions show date, duration (from timers), and a completion badge.
+- Tapping a session opens its detail page.
+- Navigation options:
+  - Manage Assignments
+  - Settings
+
+### 6.2 Study Session Detail
+- Main timer with Start, Pause, and Reset buttons.
+- Timer increments global state every second when running.
+- Break suggestions appear after long study durations.
+- Tasks section:
+  - Add new tasks
+  - Toggle task completion
+  - Delete tasks
+  - Linked assignment indicators
+- Reminder interval selection dropdown.
+- Study tip section displays helpful suggestions.
+
+### 6.3 Assignment List
+- Shows all assignments sorted by due date.
+- Each assignment displays:
+  - Name
+  - Due date
+  - Color-coded urgency status
+  - Progress percentage
+- Animated progress bar shows assignment completion visually.
+- Delete button removes an assignment.
+- Button to add new assignment.
+
+### 6.4 Add Assignment
+- Fields:
+  - Assignment name
+  - Due date (via date picker)
+- Validation ensures name is not empty.
+- Saves assignment and returns to assignment list.
+
+### 6.5 Settings
+- Toggle study reminder notifications.
+- Switch between Light, Dark, and Auto appearance modes.
+- Notification permission requests are triggered when needed.
+- Theme changes immediately update the appearance of the entire app.
+
+## 7. Development Guide
+
+### 7.1 Requirements
+To run and develop the Study Planner App, the following tools are required:
+
+- Node.js (LTS recommended)
+- npm (comes with Node.js)
+- Expo CLI (`npm install -g expo-cli`)
+- Git
+- Expo Go (for physical device testing)
+- Optional:
+  - Android Studio (for Android Emulator)
+  - Xcode (for iOS Simulator on macOS)
+
+---
+
+### 7.2 Installation
+Clone the repository and install dependencies:
+```bash
+git clone <your-repo-url>
+cd study-planner
+npm install
+```
+### 7.3 Running the App
+
+Start the development server:
+```bash
+npm start
+```
+Running on a physical device (Expo Go):
+- Install Expo Go from the App Store or Google Play.
+- Scan the QR code shown in the terminal or the browser.
+
+Running on iOS Simulator (macOS or Android Emulator):
+```bash
+npm run ios
+npm run android
+```
+### 7.4 Project Structure Overview
+```text
 my-app/
 ├── app/
 │   ├── _layout.tsx
@@ -121,6 +269,6 @@ my-app/
 ├── package.json
 ├── package-lock.json
 └── tsconfig.json
-
+```
 
 npx expo start 
