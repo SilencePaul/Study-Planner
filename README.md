@@ -74,81 +74,86 @@ We wanted to build a lightweight and academically-focused productivity applicati
 ## 5. Features
 
 ### 5.1 Study Sessions
-- Create daily study sessions.
-- Built-in timer (start, pause, reset).
+- Create daily study sessions with subject, duration, and optional notes.
+- Built-in study timer with **Start**, **Pause**, and **Reset**.
 - Automatic duration updates based on timer seconds.
-- Break suggestions after long study periods.
-- Add tasks within a session.
-- Toggle task completion.
-- Delete tasks.
-- Link tasks to related assignments.
-- Completion badges (Gold, Silver, Incomplete).
-- Select reminder interval (None, 5, 15, 30 minutes).
-- Display study tips fetched from API.
+- Break suggestions triggered after long study periods.
+- Add tasks within a study session.
+- Toggle task completion status.
+- Delete tasks directly from the detail view.
+- Link tasks to related assignments for automatic progress calculation.
+- Visual badges (Gold, Silver, Incomplete) showing completion status.
+- Select study reminder interval (None, 5, 15, 30 minutes).
+- Display dynamic study tips fetched from a public API.
 
 ### 5.2 Tasks
-- Each task contains:
-  - A name
-  - A goal type (full or partial)
-  - Optional description
-  - Optional assignment link
-- Full tasks contribute 100% to the linked assignment.
-- Partial tasks contribute 30% each (up to 90% max without a full task).
+Each task includes:
+- A task name  
+- Goal type: **full goal** or **partial goal**  
+- Optional description  
+- Optional assignment linkage  
+
+Task logic:
+- Full-goal tasks contribute **100%** progress to the linked assignment.
+- Partial-goal tasks contribute **30%** each, up to a **maximum of 90%** if no full goal task is completed.
 
 ### 5.3 Assignments
-- Create assignments with name and due date.
-- Edit previously created assignments.
-- Delete assignments when no longer needed.
-- Assignments are sorted automatically by due date.
-- Color-coded urgency states:
-  - Overdue
-  - Due soon
-  - Normal
-  - Completed
-- Assignment progress is updated automatically based on related tasks.
-- Progress is shown with an animated progress bar component.
+- Create new assignments with name and due date.
+- Edit existing assignments with updated details.
+- Delete assignments from the list.
+- Assignments are automatically sorted by closest due date.
+- Color-coded urgency levels:
+  - **Overdue**
+  - **Due soon**
+  - **Normal**
+  - **Completed**
+- Progress automatically calculated from linked tasks.
+- Progress displayed using an **animated progress bar component**.
 
 ### 5.4 Themes
-- Light mode.
-- Dark mode.
-- Auto mode (follows system setting).
-- Entire app responds to theme changes dynamically.
+- Support for **Light** mode.
+- Support for **Dark** mode.
+- **Auto** mode follows system appearance.
+- Entire UI responds dynamically to theme changes through a global ThemeContext.
 
 ### 5.5 Notifications
-- Local reminders based on the selected interval.
-- Full permission checking and requesting.
-- Notification debugging supported through scheduled-notification logging.
-- Uses expo-notifications for all notification logic.
+- Local study reminders sent based on selected reminder interval.
+- Full permission checking and user prompts on startup.
+- Debug mode to log and inspect scheduled notifications.
+- All notifications handled using **Expo Notifications** API.
 
 ### 5.6 Persistent Storage
-All data is saved locally, including:
-- Study sessions
-- Tasks
-- Assignments
-- Active timers
-- Notification settings
-- User theme preferences
-- Reminder interval preferences
+All user data persists across app restarts, including:
+- Study sessions  
+- Tasks  
+- Assignments  
+- Active timers  
+- Notification settings  
+- Theme preferences  
+- Reminder interval settings  
 
-Saved using a custom AsyncStorage wrapper for reliability and clean API usage.
+Persistence is implemented using a custom AsyncStorage wrapper for reliability and modular code structure.
 
-### Advanced Feature 1: Gamification with Badges for Study Milestones
-The app includes a built-in gamification system that rewards users with visual badges based on their study performance. Each study session is assigned a completion status that determines the badge level:
-- **Gold Badge** – full completion of study objectives
-- **Silver Badge** – partial progress toward goals
-- **Incomplete Badge** – minimal or no progress
+### 5.7 Advanced Features
 
-Badges serve as motivational feedback, helping students stay consistent and engaged. The badge component is implemented as a reusable TypeScript component (`Badge.tsx`) and integrated into both the Home screen and Session Details screen.
+#### 5.7.1 Gamification with Badges for Study Milestones
+- A badge system visually rewards study performance.
+- Badge levels:
+  - **Gold** – complete study objective  
+  - **Silver** – partially completed  
+  - **Incomplete** – minimal or no progress  
+- Encourages user engagement and consistency.
+- Implemented as a reusable TypeScript component (`Badge.tsx`).
+- Displayed on both Home and Detail screens.
 
-### Advanced Feature 2: Custom Animations for Progress Tracking
-The application features custom animations to enhance progress visualization. The animated progress bar smoothly transitions between values using React Native’s `Animated` API. This animated feedback appears in the assignment progress component and provides a more polished and dynamic user experience.
-
-The animation logic is handled in the `ProgressBar.tsx` component, which uses:
-- `Animated.Value` for stateful animation values
-- `Animated.timing` for smooth transitions
-- TypeScript-typed props to ensure strong type safety
-
-These animations elevate the user interface beyond static visuals and improve the overall responsiveness of the app.
+#### 5.7.2 Custom Animations for Progress Tracking
+- Smooth animated transitions for assignment progress.
+- Implemented using React Native’s `Animated` API.
+- Animation features:
+  - `Animated.Value` for progress state
+  - `Animated.timing` for smooth interpolation
+- Created in reusable `ProgressBar.tsx` component with TypeScript-typed props.
+- Enhances user experience with polished, responsive UI feedback.
 
 ---
 
