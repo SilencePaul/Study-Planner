@@ -132,6 +132,24 @@ All data is saved locally, including:
 
 Saved using a custom AsyncStorage wrapper for reliability and clean API usage.
 
+### Advanced Feature 1: Gamification with Badges for Study Milestones
+The app includes a built-in gamification system that rewards users with visual badges based on their study performance. Each study session is assigned a completion status that determines the badge level:
+- **Gold Badge** – full completion of study objectives
+- **Silver Badge** – partial progress toward goals
+- **Incomplete Badge** – minimal or no progress
+
+Badges serve as motivational feedback, helping students stay consistent and engaged. The badge component is implemented as a reusable TypeScript component (`Badge.tsx`) and integrated into both the Home screen and Session Details screen.
+
+### Advanced Feature 2: Custom Animations for Progress Tracking
+The application features custom animations to enhance progress visualization. The animated progress bar smoothly transitions between values using React Native’s `Animated` API. This animated feedback appears in the assignment progress component and provides a more polished and dynamic user experience.
+
+The animation logic is handled in the `ProgressBar.tsx` component, which uses:
+- `Animated.Value` for stateful animation values
+- `Animated.timing` for smooth transitions
+- TypeScript-typed props to ensure strong type safety
+
+These animations elevate the user interface beyond static visuals and improve the overall responsiveness of the app.
+
 ---
 
 ## 6. User Guide
