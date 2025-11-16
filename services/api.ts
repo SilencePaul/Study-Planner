@@ -1,4 +1,4 @@
-const STUDY_TIPS_API = 'https://zenquotes.io/api/today';
+const STUDY_TIPS_API = 'https://zenquotes.io/api/random';
 
 export interface StudyTip {
   text: string;

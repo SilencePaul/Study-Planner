@@ -1,6 +1,23 @@
 import { AppState, ActionType, Session, Task, Assignment } from '@/types';
 import { generateId } from '@/utils';
 
+// Helper: calculate assignment progress from authoritative state (all sessions/tasks)
+const calculateAssignmentProgress = (state: AppState, assignmentId: string): number => {
+  const allAssignmentTasks = state.sessions.flatMap(s => s.tasks.filter(t => t.assignmentId === assignmentId));
+
+  // If any completed full task exists, assignment is 100%
+  const hasCompletedFull = allAssignmentTasks.some(t => t.goal === 'full' && t.completed);
+  if (hasCompletedFull) return 100;
+
+  // Sum partialPercent of completed partial tasks. If partialPercent missing, default to 50.
+  const partialSum = allAssignmentTasks
+    .filter(t => t.goal === 'partial' && t.completed)
+    .reduce((acc, t) => acc + (typeof t.partialPercent === 'number' ? t.partialPercent : 50), 0);
+
+  // Cap between 0 and 100 (but full tasks already handled above)
+  return Math.max(0, Math.min(100, partialSum));
+};
+
 // reducer
 
 export const initialState: AppState = {
@@ -108,12 +125,7 @@ export const appReducer = (state: AppState, action: ActionType): AppState => {
       break;
       
     case 'TOGGLE_TASK_COMPLETE': {
-      // Find the task before toggling to know its current state
-      const session = state.sessions.find(s => s.id === action.payload.sessionId);
-      const task = session?.tasks.find(t => t.id === action.payload.taskId);
-      const currentCompletedState = task?.completed || false;
-      
-      // First toggle the task completion
+      // Toggle the task completion inside sessions
       const sessionsWithToggledTask = state.sessions.map(s =>
         s.id === action.payload.sessionId
           ? {
@@ -127,24 +139,21 @@ export const appReducer = (state: AppState, action: ActionType): AppState => {
           : s
       );
 
-      // Update assignment progress if this task is linked to an assignment
-      let updatedAssignments = [...state.assignments];
-      if (task && task.assignmentId) {
-        const assignment = state.assignments.find(a => a.id === task.assignmentId);
-        if (assignment) {
-          const progressChange = task.goal === 'full' ? 100 : 50;
-          const newProgress = currentCompletedState 
-            ? // If marking as incomplete (was completed, now uncompleting), decrease progress
-              Math.max(0, assignment.progress - progressChange)
-            : // If marking as complete (was incomplete, now completing), increase progress
-              Math.min(100, assignment.progress + progressChange);
-          
-          updatedAssignments = state.assignments.map(a =>
-            a.id === task.assignmentId
-              ? { ...a, progress: newProgress }
-              : a
-          );
-        }
+      // Recompute affected assignment progress (if the toggled task had an assignmentId)
+      const toggledSession = state.sessions.find(s => s.id === action.payload.sessionId);
+      const toggledTask = toggledSession?.tasks.find(t => t.id === action.payload.taskId);
+
+      let updatedAssignments = state.assignments;
+      if (toggledTask && toggledTask.assignmentId) {
+        const assignmentId = toggledTask.assignmentId;
+
+        // Build a temporary state reflecting the toggled sessions to compute progress
+        const tempState: AppState = { ...state, sessions: sessionsWithToggledTask };
+        const newProgress = calculateAssignmentProgress(tempState, assignmentId);
+
+        updatedAssignments = state.assignments.map(a =>
+          a.id === assignmentId ? { ...a, progress: newProgress } : a
+        );
       }
 
       newState = {
@@ -156,6 +165,7 @@ export const appReducer = (state: AppState, action: ActionType): AppState => {
     }
     
     case 'UPDATE_ASSIGNMENT_PROGRESS':
+      // Keep this action but it's recommended to prefer automatic recomputation.
       newState = {
         ...state,
         assignments: state.assignments.map(assignment =>
@@ -166,30 +176,59 @@ export const appReducer = (state: AppState, action: ActionType): AppState => {
       };
       break;
 
-    case 'ADD_TASK':
-      newState = {
-        ...state,
-        sessions: state.sessions.map(s =>
-          s.id === action.payload.sessionId
-            ? { ...s, tasks: [...s.tasks, action.payload.task] }
-            : s
-        ),
-      };
-      break;
+    case 'ADD_TASK': {
+      const sessionsWithAddedTask = state.sessions.map(s =>
+        s.id === action.payload.sessionId
+          ? { ...s, tasks: [...s.tasks, action.payload.task] }
+          : s
+      );
 
-    case 'DELETE_TASK':
+      // If task belongs to an assignment, recompute that assignment's progress
+      let updatedAssignmentsAdd = state.assignments;
+      if (action.payload.task.assignmentId) {
+        const tempState: AppState = { ...state, sessions: sessionsWithAddedTask };
+        const newProgress = calculateAssignmentProgress(tempState, action.payload.task.assignmentId);
+        updatedAssignmentsAdd = state.assignments.map(a =>
+          a.id === action.payload.task.assignmentId ? { ...a, progress: newProgress } : a
+        );
+      }
+
       newState = {
         ...state,
-        sessions: state.sessions.map(s =>
-          s.id === action.payload.sessionId
-            ? {
-                ...s,
-                tasks: s.tasks.filter(t => t.id !== action.payload.taskId),
-              }
-            : s
-        ),
+        sessions: sessionsWithAddedTask,
+        assignments: updatedAssignmentsAdd,
       };
       break;
+    }
+
+    case 'DELETE_TASK': {
+      // Remove the task
+      const sessionsWithDeletedTask = state.sessions.map(s =>
+        s.id === action.payload.sessionId
+          ? { ...s, tasks: s.tasks.filter(t => t.id !== action.payload.taskId) }
+          : s
+      );
+
+      // Find the deleted task's assignmentId by scanning previous state
+      const sessionBefore = state.sessions.find(s => s.id === action.payload.sessionId);
+      const deletedTask = sessionBefore?.tasks.find(t => t.id === action.payload.taskId);
+
+      let updatedAssignmentsDel = state.assignments;
+      if (deletedTask && deletedTask.assignmentId) {
+        const tempState: AppState = { ...state, sessions: sessionsWithDeletedTask };
+        const newProgress = calculateAssignmentProgress(tempState, deletedTask.assignmentId);
+        updatedAssignmentsDel = state.assignments.map(a =>
+          a.id === deletedTask.assignmentId ? { ...a, progress: newProgress } : a
+        );
+      }
+
+      newState = {
+        ...state,
+        sessions: sessionsWithDeletedTask,
+        assignments: updatedAssignmentsDel,
+      };
+      break;
+    }
 
     case 'ADD_ASSIGNMENT':
       newState = {

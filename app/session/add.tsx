@@ -30,16 +30,26 @@ export default function AddSessionScreen() {
 
   // for dropdown
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const selectedAssignment = state.assignments.find(a => a.id === selectedAssignmentId);
 
   // taskName: Stores the task name input
   const [taskName, setTaskName] = useState('');
   // goal: Tracks completion goal (full/partial)
   const [goal, setGoal] = useState<'full' | 'partial'>('full');
+  // partialPercent: contribution percent for partial goal tasks
+  const [partialPercent, setPartialPercent] = useState<number>(50);
   // description: Stores optional task description
   const [description, setDescription] = useState('');
   // selectedAssignmentId: Tracks if task comes from an assignment
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<string | undefined>();
+
+  const selectedAssignment = state.assignments.find(a => a.id === selectedAssignmentId);
+
+  // Counts for selected assignment partials
+  const partialTasksForAssignment = selectedAssignmentId
+    ? state.sessions.flatMap(s => s.tasks).filter(t => t.assignmentId === selectedAssignmentId && t.goal === 'partial')
+    : [];
+  const partialCount = partialTasksForAssignment.length;
+  const completedPartialCount = partialTasksForAssignment.filter(t => t.completed).length;
 
   // Purpose: Determine which session to add the task to
   const today = new Date().toLocaleDateString('en-CA');
@@ -60,12 +70,8 @@ export default function AddSessionScreen() {
       return false;
     }
     
-    // Don't show if already added to current session
-    const isAlreadyAdded = currentSession.tasks.some(task => 
-      task.assignmentId === assignmentId
-    );
-    
-    return !isAlreadyAdded;
+    // Allow adding the same assignment multiple times as long as it's not completed.
+    return true;
   };
 
   // Filter assignments to exclude already added ones AND completed ones
@@ -89,6 +95,59 @@ export default function AddSessionScreen() {
       );
       return;
     }
+
+    // If this is a partial task linked to an assignment, ensure partialPercent doesn't exceed remaining
+    if (selectedAssignmentId && goal === 'partial') {
+      const assignment = state.assignments.find(a => a.id === selectedAssignmentId);
+      const remaining = Math.max(0, 100 - (assignment?.progress || 0));
+      if (partialPercent > remaining) {
+        // Offer choices to the user: auto-adjust, mark full, or cancel
+        Alert.alert(
+          'Partial percent too large',
+          `The entered partial percent (${partialPercent}%) exceeds the remaining ${remaining}% for this assignment. What would you like to do?`,
+          [
+            {
+              text: `Auto-adjust to ${remaining}%`,
+              onPress: () => {
+                // adjust and continue save
+                const adjustedTask: Task = {
+                  id: generateId(),
+                  name: taskName.trim(),
+                  goal,
+                  completed: false,
+                  description: description.trim() || undefined,
+                  assignmentId: selectedAssignmentId,
+                  partialPercent: remaining,
+                };
+
+                dispatch({ // Dispatches ADD_TASK action to global state
+                  type: 'ADD_TASK',
+                  payload: { sessionId: currentSession!.id, task: adjustedTask },
+                });
+                router.back();
+              },
+            },
+            {
+              text: 'Mark as Full',
+              onPress: () => {
+                const fullTask: Task = {
+                  id: generateId(),
+                  name: taskName.trim(),
+                  goal: 'full',
+                  completed: false,
+                  description: description.trim() || undefined,
+                  assignmentId: selectedAssignmentId,
+                };
+                dispatch({ type: 'ADD_TASK', payload: { sessionId: currentSession!.id, task: fullTask } });
+                router.back();
+              },
+            },
+            { text: 'Cancel', style: 'cancel' },
+          ],
+        );
+        return;
+      }
+    }
   
     // Create today's session if it doesn't exist
     if (!currentSession) {
@@ -108,6 +167,7 @@ export default function AddSessionScreen() {
       completed: false,
       description: description.trim() || undefined,
       assignmentId: selectedAssignmentId,
+      partialPercent: goal === 'partial' ? partialPercent : undefined,
     };
     dispatch({ // Dispatches ADD_TASK action to global state
       type: 'ADD_TASK',
@@ -236,7 +296,73 @@ export default function AddSessionScreen() {
             placeholderTextColor={theme.colors.textSecondary}
           />
         </View>
-        
+        {/* Partial percent input when user selects partial goal */}
+        {goal === 'partial' && (
+          <View style={styles.section}>
+            <Text style={[styles.label, { color: theme.colors.text }]}>Partial Contribution (%)</Text>
+            <TextInput
+              style={[
+                styles.input,
+                {
+                  backgroundColor: theme.colors.surface,
+                  color: theme.colors.text,
+                  borderColor: theme.colors.border,
+                },
+              ]}
+              value={String(partialPercent)}
+              onChangeText={(t) => {
+                const n = Number(t.replace(/[^0-9]/g, '')) || 0;
+                // clamp between 1 and 100
+                const clamped = Math.max(1, Math.min(100, n));
+                setPartialPercent(clamped);
+              }}
+              keyboardType="numeric"
+              placeholder="Enter percent (1-100)"
+              placeholderTextColor={theme.colors.textSecondary}
+            />
+
+            {selectedAssignmentId && (
+              (() => {
+                const assignment = state.assignments.find(a => a.id === selectedAssignmentId);
+                const remaining = Math.max(0, 100 - (assignment?.progress || 0));
+                return (
+                  <>
+                    <Text style={{ marginTop: 6, color: partialPercent > remaining ? theme.colors.error : theme.colors.textSecondary }}>
+                      {`Remaining for assignment: ${remaining}%`}
+                      {partialPercent > remaining ? ' — Entered percent exceeds remaining; choose a smaller percentage or mark task as Full.' : ''}
+                    </Text>
+
+                    <Text style={{ marginTop: 6, color: theme.colors.textSecondary }}>
+                      {`Partials added: ${partialCount} (${completedPartialCount} completed)`}
+                    </Text>
+
+                    {partialPercent > remaining && (
+                      <View style={{ flexDirection: 'row', marginTop: 8 }}>
+                        <Button
+                          variant="secondary"
+                          onPress={() => setPartialPercent(remaining)}
+                          style={{ flex: 1, marginRight: 8 }}
+                          textStyle={{ color: theme.colors.text }}
+                        >
+                          Auto-adjust to {remaining}%
+                        </Button>
+
+                        <Button
+                          variant="secondary"
+                          onPress={() => setGoal('full')}
+                          style={{ flex: 1 }}
+                          textStyle={{ color: theme.colors.text }}
+                        >
+                          Make Full
+                        </Button>
+                      </View>
+                    )}
+                  </>
+                );
+              })()
+            )}
+          </View>
+        )}
         {/* Goal Selection */}
         <View style={styles.section}>
           <Text style={[styles.label, { color: theme.colors.text }]}>

@@ -259,62 +259,7 @@ export default function DetailScreen() {
         },
       });
 
-      // Update assignment progress if this task is linked to an assignment
-      if (task && task.assignmentId) {
-        const assignment = state.assignments.find(a => a.id === task.assignmentId);
-        if (assignment) {
-          // Get all tasks for this assignment across all sessions
-          const allAssignmentTasks = state.sessions.flatMap(session => 
-            session.tasks.filter(t => t.assignmentId === task.assignmentId)
-          );
-
-          // Count completed tasks by type
-          const completedPartialTasks = allAssignmentTasks.filter(t => 
-            t.assignmentId === task.assignmentId && 
-            t.completed && 
-            t.goal === 'partial'
-          ).length;
-
-          const hasCompletedFullTask = allAssignmentTasks.some(t => 
-            t.assignmentId === task.assignmentId && 
-            t.completed && 
-            t.goal === 'full'
-          );
-
-          let newProgress = 0;
-
-          if (hasCompletedFullTask) {
-            // If ANY full task is completed, assignment is 100% complete
-            newProgress = 100;
-          } else if (completedPartialTasks > 0) {
-            // Calculate progress based on partial tasks (capped at 90% without a full task)
-            const partialProgress = Math.min(completedPartialTasks * 30, 90);
-            newProgress = partialProgress;
-          }
-          // If no tasks completed, progress remains 0
-
-          console.log('Progress Calculation:', {
-            assignmentId: task.assignmentId,
-            completedPartialTasks,
-            hasCompletedFullTask,
-            newProgress,
-            allTasks: allAssignmentTasks.map(t => ({
-              id: t.id,
-              name: t.name,
-              goal: t.goal,
-              completed: t.completed
-            }))
-          });
-
-          dispatch({
-            type: 'UPDATE_ASSIGNMENT_PROGRESS',
-            payload: {
-              assignmentId: task.assignmentId,
-              progress: newProgress
-            }
-          });
-        }
-      }
+      // Progress is recalculated centrally in the reducer; no component-level update required.
     }
   };
   

@@ -5,6 +5,7 @@ export interface Task {
   completed: boolean;
   description?: string;
   assignmentId?: string;
+  partialPercent?: number; // Optional: contribution percentage when goal === 'partial'
 }
 
 export interface Session {
