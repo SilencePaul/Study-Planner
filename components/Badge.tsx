@@ -12,9 +12,9 @@ export const Badge: React.FC<BadgeProps> = ({ status, theme }) => {
   const getBadgeContent = () => {
     switch (status) {
       case 'gold':
-        return { emoji: '🟢', label: 'Gold' };
+        return { emoji: '🥇', label: 'Gold' };
       case 'silver':
-        return { emoji: '🟡', label: 'Silver' };
+        return { emoji: '🥈', label: 'Silver' };
       case 'red':
         return { emoji: '🔴', label: 'Incomplete' };
     }

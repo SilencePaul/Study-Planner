@@ -13,11 +13,13 @@ import { Assignment } from '@/types';
 import { formatDate, getDaysUntilDue, sortByDueDate } from '@/utils';
 import { ProgressBar } from '@/components/ProgressBar';
 import { useTheme } from '@/theme/context';
+import { createCommonStyles } from '@/theme/styles';
 
 export default function ManageAssignmentsScreen() {
   const router = useRouter();
   const { state, dispatch } = useAppContext();
   const { theme } = useTheme();
+  const common = createCommonStyles(theme);
 
   const sortedAssignments = sortByDueDate(state.assignments);
 
@@ -100,40 +102,32 @@ export default function ManageAssignmentsScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View style={[common.container, { backgroundColor: theme.colors.background }]}>
       <StatusBar style="auto" />
       
       <FlatList
         data={sortedAssignments}
         keyExtractor={(item) => item.id}
         renderItem={renderAssignmentItem}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={common.listContent}
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={[styles.emptyText, { color: theme.colors.textSecondary }]}>
-              No assignments yet. Add your first assignment!
-            </Text>
+          <View style={common.emptyContainer}>
+            <Text style={[common.emptyText, { color: theme.colors.textSecondary }]}>No assignments yet. Add your first assignment!</Text>
           </View>
         }
       />
 
       <TouchableOpacity
-        style={[styles.addButton, { backgroundColor: theme.colors.primary }]}
+        style={[common.addButton, { backgroundColor: theme.colors.primary }]}
         onPress={() => router.push('/assignments/new')}
       >
-        <Text style={styles.buttonText}>Add New Assignment</Text>
+        <Text style={common.buttonText}>Add New Assignment</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  listContent: {
-    padding: 16,
-  },
   assignmentItem: {
     padding: 16,
     borderRadius: 12,
@@ -172,25 +166,6 @@ const styles = StyleSheet.create({
   progressLabel: {
     fontSize: 12,
     marginBottom: 4,
-  },
-  emptyContainer: {
-    padding: 32,
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  addButton: {
-    padding: 16,
-    margin: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
   },
 });
 

@@ -15,12 +15,14 @@ import { Assignment } from '@/types';
 import { generateId } from '@/utils';
 import { lightTheme } from '@/theme';
 import { useTheme } from '@/theme/context';
+import { createCommonStyles } from '@/theme/styles';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function NewAssignmentScreen() {
   const router = useRouter();
   const { state, dispatch } = useAppContext();
   const { theme } = useTheme();
+  const common = createCommonStyles(theme);
 
   const [name, setName] = useState('');
   const [dueDate, setDueDate] = useState(new Date());
@@ -44,7 +46,7 @@ export default function NewAssignmentScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View style={[common.container, { backgroundColor: theme.colors.background }]}>
       <StatusBar style="auto" />
       
       <View style={styles.content}>
@@ -101,20 +103,18 @@ export default function NewAssignmentScreen() {
           )}
         </View>
 
-        <View style={styles.buttonContainer}>
+        <View style={styles.actionsRow}>
           <TouchableOpacity
-            style={[styles.saveButton, { backgroundColor: theme.colors.primary }]}
+            style={[common.primaryButton, { backgroundColor: theme.colors.primary }]}
             onPress={handleSave}
           >
-            <Text style={styles.buttonText}>✅ Save</Text>
+            <Text style={common.buttonText}>✅ Save</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.cancelButton, { borderColor: theme.colors.error }]}
+            style={[common.secondaryButton, { borderColor: theme.colors.error }]}
             onPress={() => router.back()}
           >
-            <Text style={[styles.cancelButtonText, { color: theme.colors.error }]}>
-              ❌ Cancel
-            </Text>
+            <Text style={[common.secondaryButtonText, { color: theme.colors.error }]}>❌ Cancel</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -123,9 +123,6 @@ export default function NewAssignmentScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   content: {
     padding: 16,
   },
@@ -151,29 +148,11 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 16,
   },
-  buttonContainer: {
-    // spacing via margins on children
+  actionsRow: {
     marginTop: 8,
-  },
-  saveButton: {
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  cancelButton: {
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    borderWidth: 1,
-  },
-  cancelButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 8,
   },
 });
 

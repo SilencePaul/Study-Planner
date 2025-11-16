@@ -14,6 +14,7 @@ import { Session } from '@/types';
 import { formatDate, formatTime, formatTimer, getCompletionStatus } from '@/utils';// Helper functions
 import { Badge } from '@/components/Badge';
 import { useTheme } from '@/theme/context';
+import { createCommonStyles } from '@/theme/styles';
 
 
 //Main screen that displays study sessions and 
@@ -29,7 +30,7 @@ export default function HomeScreen() {
   const router = useRouter();// Navigation instance
   const { state, dispatch } = useAppContext();//global app state && update
   const { theme, isDark } = useTheme();
-  
+  const common = createCommonStyles(theme);
   console.log('HomeScreen - State loaded:', { sessionsCount: state.sessions.length });
 
   const handleDeleteSession = (sessionId: string) => {
@@ -57,22 +58,22 @@ export default function HomeScreen() {
     return (
       // one task panel
       <TouchableOpacity // style of card
-        style={[styles.sessionItem, { backgroundColor: theme.colors.surface }]}
+        style={[common.sessionItem, { backgroundColor: theme.colors.surface }]}
         onPress={() => router.push(`/Detail/${item.id}`)}
       >
         {/* Main content */}
         <View style={{ flex: 1 }}>
-          <Text style={[styles.dateText, { color: theme.colors.text }]}>
+          <Text style={[common.dateText, { color: theme.colors.text }]}>
             {formatDate(item.date)}
           </Text>
           {/* timer */} 
-          <Text style={[styles.durationText, { color: theme.colors.text }]}>
+          <Text style={[common.durationText, { color: theme.colors.text }]}>
             {formatTimer(sessionTimer)}  -  {item.tasks.length} tasks
           </Text>
         </View>
         
         {/* Badge / dot positioned absolutely */}
-        <View style={styles.badgeWrapper}>
+        <View style={common.badgeWrapper}>
           <Badge status={status} theme={theme} />
         </View>
 
@@ -89,7 +90,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View style={[common.container, { backgroundColor: theme.colors.background }]}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       
       {/*empty panel list*/}
@@ -97,10 +98,10 @@ export default function HomeScreen() {
         data={state.sessions}
         keyExtractor={(item) => item.id}
         renderItem={renderSessionItem}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={common.listContent}
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={[styles.emptyText, { color: theme.colors.textSecondary }]}> 
+          <View style={common.emptyContainer}>
+            <Text style={[common.emptyText, { color: theme.colors.textSecondary }]}> 
               No study sessions yet. Create your first one!
             </Text>
           </View>
@@ -110,7 +111,7 @@ export default function HomeScreen() {
       {/*create new study record button*/}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={[styles.primaryButton, { backgroundColor: theme.colors.primary }]}
+          style={[common.primaryButton, { backgroundColor: theme.colors.primary }]}
           onPress={() => {
             // Home screen: create session with full ISO datetime
             const now = new Date();
@@ -126,24 +127,24 @@ export default function HomeScreen() {
             router.push(`/Detail/${newSession.id}?isNew=true`);
           }}
         >
-          <Text style={styles.buttonText}>Create New Study Record</Text>
+          <Text style={common.buttonText}>Create New Study Record</Text>
         </TouchableOpacity>
 
         {/**/}
         {/*manage assignment button*/}
         <TouchableOpacity
-          style={[styles.secondaryButton, { borderColor: theme.colors.primary }]}
+          style={[common.secondaryButton, { borderColor: theme.colors.primary }]}
           onPress={() => router.push('/assignments')}
         >
-          <Text style={[styles.secondaryButtonText, { color: theme.colors.primary }]}>Manage Assignments</Text>
+          <Text style={[common.secondaryButtonText, { color: theme.colors.primary }]}>Manage Assignments</Text>
         </TouchableOpacity>
         
         {/*settings button*/}
         <TouchableOpacity
-          style={[styles.secondaryButton, { borderColor: theme.colors.primary }]}
+          style={[common.secondaryButton, { borderColor: theme.colors.primary }]}
           onPress={() => router.push('/settings')}
         >
-          <Text style={[styles.secondaryButtonText, { color: theme.colors.primary }]}>Settings</Text>
+          <Text style={[common.secondaryButtonText, { color: theme.colors.primary }]}>Settings</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -151,38 +152,11 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  listContent: {
-    padding: 12,
-  },
-  sessionItem: {
-    padding: 12,
-    borderRadius: 6,
-    marginBottom: 6,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    height: 130,
-    // 保证子元素绝对定位仍然可见
-    overflow: 'visible',        // <-- 允许子元素超出可见区域
-    position: 'relative',       // <-- 为绝对定位的子元素提供参考定位上下文
-    //backgroundColor: '#fff',
-  },
   sessionHeader: {
     flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
-  },
-  dateText: { // for date one top of each study panel.
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 10,
-  },
-  durationText: { // 
-    fontSize: 35, 
-    fontWeight: '500',
   },
   deleteButton: {
     padding: 3,
@@ -193,46 +167,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
-  emptyContainer: {
-    padding: 32,
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: 16,
-    textAlign: 'center',
-  },
   buttonContainer: {
     padding: 10,
     // spacing via margins on children
     borderTopWidth: 1,
     borderTopColor: '#E0E0E0',
   },
-  primaryButton: {
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 5,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  secondaryButton: {
-    padding: 10,
-    borderRadius: 8,
-    alignItems: 'center',
-    borderWidth: 1,
-    marginBottom: 5,
-  },
-  secondaryButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  badgeWrapper: { // for badge(dot)
-  position: 'absolute', // float in corner
-  top: 12,
-  right: 12,
-  zIndex: 10,           // make sure it renders above other content
-},
 });

@@ -14,6 +14,7 @@ import { useAppContext } from '../context';
 import { Task } from '@/types';
 import { generateId } from '@/utils';
 import { useTheme } from '@/theme/context';
+import { createCommonStyles } from '@/theme/styles';
 import { useLocalSearchParams } from 'expo-router';
 
 
@@ -24,6 +25,7 @@ export default function AddSessionScreen() {
   const router = useRouter();
   const { state, dispatch } = useAppContext();
   const { theme, isDark } = useTheme();
+  const common = createCommonStyles(theme);
 
   // for dropdown
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -116,7 +118,7 @@ export default function AddSessionScreen() {
   // UI
   return (
     <ScrollView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[common.container, { backgroundColor: theme.colors.background }]}
     >
       <StatusBar style={isDark ? 'light' : 'dark'} />
       
@@ -155,7 +157,7 @@ export default function AddSessionScreen() {
           {/* Dropdown Trigger */}
           <TouchableOpacity
             style={[
-              styles.dropdownTrigger,
+              common.dropdownTrigger,
               { 
                 backgroundColor: selectedAssignmentId ? theme.colors.primary + '20' : theme.colors.surface,
                 borderColor: theme.colors.primary,
@@ -164,7 +166,7 @@ export default function AddSessionScreen() {
             onPress={() => setDropdownVisible(!dropdownVisible)}
           >
             <Text style={[
-              styles.dropdownTriggerText, 
+              common.dropdownTriggerText, 
               { color: selectedAssignmentId ? theme.colors.text : theme.colors.textSecondary }
             ]}>
               {selectedAssignmentId 
@@ -179,7 +181,7 @@ export default function AddSessionScreen() {
           {/* Dropdown List */}
           {dropdownVisible && (
             <View style={[
-              styles.dropdownList,
+              common.dropdownList,
               { 
                 backgroundColor: theme.colors.surface,
                 borderColor: theme.colors.border,
@@ -202,7 +204,7 @@ export default function AddSessionScreen() {
                       setTaskName(assignment.name);
                     }}
                   >
-                    <Text style={[styles.dropdownItemText, { color: theme.colors.text }]}>
+                    <Text style={[common.dropdownItemText, { color: theme.colors.text }]}>
                       {assignment.name}
                     </Text>
                   </TouchableOpacity>
@@ -296,20 +298,18 @@ export default function AddSessionScreen() {
         </View>
             
         {/* Action Buttons */}
-        <View style={styles.buttonContainer}>
+        <View style={styles.actionsRow}>
           <TouchableOpacity
-            style={[styles.saveButton, { backgroundColor: theme.colors.primary }]}
+            style={[common.primaryButton, { backgroundColor: theme.colors.primary }]}
             onPress={handleSave}
           >
-            <Text style={styles.buttonText}>Save</Text>
+            <Text style={common.buttonText}>Save</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.cancelButton, { borderColor: theme.colors.error }]}
+            style={[common.secondaryButton, { borderColor: theme.colors.error }]}
             onPress={() => router.back()}
           >
-            <Text style={[styles.cancelButtonText, { color: theme.colors.error }]}>
-              Cancel
-            </Text>
+            <Text style={[common.secondaryButtonText, { color: theme.colors.error }]}>Cancel</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -318,9 +318,6 @@ export default function AddSessionScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   content: {
     padding: 16,
     position: 'relative',
@@ -381,29 +378,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-  buttonContainer: {
-    // replace gap with margins on buttons
-    marginTop: 8,
-  },
-  saveButton: {
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  cancelButton: {
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    borderWidth: 1,
-  },
-  cancelButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
+  // action buttons use shared common styles
   // for dropdown
   dropdownContainer: {
   marginTop: 12,
@@ -414,42 +389,9 @@ dropdownLabel: {
   fontWeight: '500',
   marginBottom: 8,
 },
-dropdownTrigger: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  borderWidth: 1,
-  borderRadius: 8,
-  padding: 12,
-  zIndex: 2,
-},
-dropdownTriggerText: {
-  fontSize: 16,
-  flex: 1,
-},
 dropdownArrow: {
   fontSize: 12,
   marginLeft: 8,
-},
-dropdownList: {
-  position: 'absolute',
-  top: '100%', // Position below the trigger
-  left: 0,
-  right: 0,
-  borderWidth: 1,
-  borderTopWidth: 0,
-  borderBottomLeftRadius: 8,
-  borderBottomRightRadius: 8,
-  maxHeight: 200,
-  shadowColor: '#000',
-  shadowOffset: {
-    width: 0,
-    height: 2,
-  },
-  shadowOpacity: 0.25,
-  shadowRadius: 3.84,
-  elevation: 5, // For Android
-  zIndex: 1000, // High z-index to appear above everything
 },
 dropdownScrollView: {
   maxHeight: 200,
@@ -460,8 +402,11 @@ dropdownItem: {
 },
 dropdownItemSelected: {
 },
-dropdownItemText: {
-  fontSize: 16,
-},
+  
+  actionsRow: {
+    marginTop: 8,
+    flexDirection: 'row',
+    gap: 8,
+  },
 });
 

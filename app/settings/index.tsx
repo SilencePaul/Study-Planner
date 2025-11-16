@@ -10,11 +10,13 @@ import {
 import { StatusBar } from 'expo-status-bar';
 import { useAppContext } from '../context';
 import { useTheme } from '@/theme/context'; // Import useTheme hook
+import { createCommonStyles } from '@/theme/styles';
 import { requestPermissions } from '@/services/notifications';
 
 export default function SettingsScreen() {
   const { state, dispatch } = useAppContext();
   const { theme, isDark } = useTheme(); // Get dynamic theme from context
+  const common = createCommonStyles(theme);
 
   const handleNotificationToggle = async (value: boolean) => {
     if (value) {
@@ -37,12 +39,12 @@ export default function SettingsScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View style={[common.container, { backgroundColor: theme.colors.background }]}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       
       <View style={styles.content}>
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+          <Text style={[common.sectionTitle, { color: theme.colors.text }] }>
             Notifications
           </Text>
           <View style={styles.settingRow}>
@@ -136,19 +138,11 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   content: {
     padding: 16,
   },
   section: {
     marginBottom: 32,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 16,
   },
   settingRow: {
     flexDirection: 'row',

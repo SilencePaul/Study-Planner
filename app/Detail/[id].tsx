@@ -16,6 +16,7 @@ import { fetchStudyTip } from '@/services/api';
 import { updateStudyReminder, requestPermissions, cancelStudyReminders } from '@/services/notifications';
 import { Badge } from '@/components/Badge';
 import { useTheme } from '@/theme/context';
+import { createCommonStyles } from '@/theme/styles';
 import { useLocalSearchParams } from 'expo-router';
 import * as Notifications from 'expo-notifications'; 
 
@@ -26,6 +27,7 @@ export default function DetailScreen() {
   const { state, dispatch } = useAppContext();
   const { theme, isDark } = useTheme();
   const { id } = useLocalSearchParams();
+  const common = createCommonStyles(theme);
   const sessionId = Array.isArray(id) ? id[0] : id;
   const currentSession = sessionId ? state.sessions.find(s => s.id === sessionId) : undefined;
 
@@ -333,31 +335,26 @@ export default function DetailScreen() {
 
   if (!currentSession) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <View style={[common.container, { backgroundColor: theme.colors.background }]}>
         <StatusBar style={isDark ? 'light' : 'dark'} />
-        <View style={styles.emptyContainer}>
-          <Text style={[styles.emptyText, { color: theme.colors.textSecondary }]}>
-            No session for today. Create one from the home screen!
-          </Text>
-          <TouchableOpacity 
-            style={[styles.button, { backgroundColor: theme.colors.primary }]}
-            onPress={() => router.replace('/')}
-          >
-            <Text style={styles.buttonText}>Go to Home</Text>
-          </TouchableOpacity>
-        </View>
+          <View style={common.emptyContainer}>
+            <Text style={[common.emptyText, { color: theme.colors.textSecondary }]}>No session for today. Create one from the home screen!</Text>
+            <TouchableOpacity style={[common.primaryButton, { backgroundColor: theme.colors.primary }]} onPress={() => router.replace('/')}> 
+              <Text style={common.buttonText}>Go to Home</Text>
+            </TouchableOpacity>
+          </View>
       </View>
     );
   }
 
   return (
     
-      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <View style={[common.container, { backgroundColor: theme.colors.background }]}>
         <StatusBar style={isDark ? 'light' : 'dark'} />
         
         {/* header section */}
-        <View style={styles.header}>
-          <Text style={[styles.dateText, { color: theme.colors.text }]}>
+        <View style={common.header}>
+          <Text style={[common.dateText, { color: theme.colors.text }]}>
             {/* date */}
             {formatDate(currentSession.date)}
           </Text>
@@ -367,7 +364,7 @@ export default function DetailScreen() {
 
         {/* timer section */}
         <View style={[styles.timerSection, { backgroundColor: theme.colors.surface }]}>
-          <Text style={[styles.timerText, { color: theme.colors.text }]}>
+          <Text style={[common.timerText, { color: theme.colors.text }]}>
             {/* 00:00:00 */}
             {formatTimer(timer)}
           </Text>
@@ -418,7 +415,7 @@ export default function DetailScreen() {
 
         {/* Tasks Section */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Tasks</Text>
+          <Text style={[common.sectionTitle, { color: theme.colors.text }]}>Tasks</Text>
           <View style={styles.tasksContainer}>
             <FlatList
               data={currentSession.tasks}
@@ -497,9 +494,7 @@ export default function DetailScreen() {
               );
             }}
               ListEmptyComponent={
-                <Text style={[styles.emptyText, { color: theme.colors.textSecondary }]}>
-                  No tasks yet. Add one below!
-                </Text>
+                <Text style={[common.emptyText, { color: theme.colors.textSecondary }]}>No tasks yet. Add one below!</Text>
               }
               showsVerticalScrollIndicator={true}
             />
@@ -508,13 +503,13 @@ export default function DetailScreen() {
 
         {/* Reminder Setting */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Reminder Interval</Text>
+          <Text style={[common.sectionTitle, { color: theme.colors.text }]}>Reminder Interval</Text>
           
           <View style={styles.dropdownContainer}>
             {/* Dropdown Trigger */}
             <TouchableOpacity
               style={[
-                styles.dropdownTrigger,
+                common.dropdownTrigger,
                 { 
                   backgroundColor: theme.colors.surface,
                   borderColor: theme.colors.border,
@@ -523,7 +518,7 @@ export default function DetailScreen() {
               onPress={() => setDropdownVisible(!dropdownVisible)}
             >
               <Text style={[
-                styles.dropdownTriggerText, 
+                common.dropdownTriggerText, 
                 { color: theme.colors.text }
               ]}>
                 {getLabelForValue(reminderInterval)}
@@ -536,7 +531,7 @@ export default function DetailScreen() {
             {/* Dropdown List */}
             {dropdownVisible && (
               <View style={[
-                styles.dropdownList,
+                common.dropdownList,
                 { 
                   backgroundColor: theme.colors.surface,
                   borderColor: theme.colors.border,
@@ -555,7 +550,7 @@ export default function DetailScreen() {
                       ]}
                       onPress={() => handleSelectInterval(interval.value)}
                     >
-                      <Text style={[styles.dropdownItemText, { color: theme.colors.text }]}>
+                      <Text style={[common.dropdownItemText, { color: theme.colors.text }]}>
                         {interval.label}
                       </Text>
                     </TouchableOpacity>
@@ -568,18 +563,18 @@ export default function DetailScreen() {
 
         {/* study tip section */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Study Tip</Text>
-          <View style={[styles.tipContainer, { backgroundColor: theme.colors.surface }]}>
-            <Text style={[styles.tipText, { color: theme.colors.text }]}>{studyTip}</Text>
+          <Text style={[common.sectionTitle, { color: theme.colors.text }]}>Study Tip</Text>
+          <View style={[common.tipContainer, { backgroundColor: theme.colors.surface }]}>
+            <Text style={[common.tipText, { color: theme.colors.text }]}>{studyTip}</Text>
           </View>
         </View>
 
         {/* ADD task button */}
         <TouchableOpacity 
-          style={[styles.addButton, { backgroundColor: theme.colors.primary }]}
+          style={[common.addButton, { backgroundColor: theme.colors.primary }]}
           onPress={() => router.push(`/session/add?sessionId=${currentSession.id}`)}
         >
-          <Text style={styles.buttonText}>Add Today Task</Text>
+          <Text style={common.buttonText}>Add Today Task</Text>
         </TouchableOpacity>
       </View>
     
@@ -587,31 +582,11 @@ export default function DetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  dateText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  timerSection: { // for timmer
+  timerSection: {
     padding: 12,
     borderRadius: 12,
     alignItems: 'center',
     marginBottom: 16,
-  },
-  timerText: { // for timmer
-    fontSize: 36,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    fontFamily: 'monospace',
   },
   breakSuggestion: {
     padding: 12,
@@ -626,9 +601,9 @@ const styles = StyleSheet.create({
   timerControls: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 12, // Modern approach for spacing
+    gap: 12,
   },
-  timerButton: { // for timmer
+  timerButton: {
     paddingHorizontal: 24,
     paddingVertical: 10,
     borderRadius: 8,
@@ -644,21 +619,16 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 16,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
   taskItem: {
     padding: 12,
     borderRadius: 8,
     marginBottom: 8,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', // This spaces the content and delete button
+    justifyContent: 'space-between',
   },
   taskMainContent: {
-    flex: 1, // Takes up all available space
+    flex: 1,
   },
   taskContent: {
     flexDirection: 'row',
@@ -680,86 +650,16 @@ const styles = StyleSheet.create({
   taskGoal: {
     fontSize: 14,
   },
-  tipContainer: {
-    padding: 16,
-    borderRadius: 8,
-  },
-  tipText: {
-    fontSize: 16,
-    fontStyle: 'italic',
-  },
   pickerContainer: {
     borderRadius: 8,
     overflow: 'hidden',
   },
-  addButton: {
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  button: {
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 32,
-  },
-  emptyText: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  // below is for "reminder interval" drop down//
-  // Reminder Dropdown Styles
   dropdownContainer: {
     zIndex: 1,
-  },
-  dropdownTrigger: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-    zIndex: 2,
-  },
-  dropdownTriggerText: {
-    fontSize: 16,
-    flex: 1,
   },
   dropdownArrow: {
     fontSize: 12,
     marginLeft: 8,
-  },
-  dropdownList: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    borderWidth: 1,
-    borderTopWidth: 0,
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
-    maxHeight: 200,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    zIndex: 1000,
   },
   dropdownScrollView: {
     maxHeight: 200,
@@ -769,17 +669,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
   },
-  dropdownItemSelected: {
+  dropdownItemSelected: {},
+  tasksContainer: {
+    height: 225,
   },
-  dropdownItemText: {
-    fontSize: 16,
-  },
-  // above is for "reminder interval" drop down//
-
-  tasksContainer: { // for Tasks Area
-    height: 225, // Adjust this value as needed
-  },
-  // Delete Button Styles
   deleteButton: {
     width: 32,
     height: 32,
@@ -787,29 +680,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 12,
-    // No need for absolute positioning since flexbox will center it vertically
   },
   deleteButtonText: {
     fontSize: 18,
     fontWeight: 'bold',
-    lineHeight: 18, // Ensures the "×" is perfectly centered
+    lineHeight: 18,
   },
-  // above: Delete Button Styles
-  // for task description
   taskDescription: {
     fontSize: 12,
     marginTop: 2,
   },
   assignmentBadge: {
-  alignSelf: 'flex-start',
-  paddingHorizontal: 8,
-  paddingVertical: 4,
-  borderRadius: 12,
-  marginTop: 4,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginTop: 4,
   },
   assignmentBadgeText: {
     fontSize: 10,
     fontWeight: '500',
   },
-  });
+});
 
