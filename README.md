@@ -371,5 +371,6 @@ Throughout the development process, the team gained practical experience with mo
 
 The completed Study Planner App meets all project objectives and provides a practical tool for students to organize their study routines more effectively. This project strengthened our skills in mobile UI/UX design, state management, asynchronous programming, and teamwork. We are satisfied with the final outcome and the learning achieved during development.
 
-
+## Video Demo
+(link should be here)
 
