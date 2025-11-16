@@ -15,6 +15,7 @@ import { REMINDER_INTERVALS } from '@/constants';
 import { fetchStudyTip } from '@/services/api';
 import { updateStudyReminder, requestPermissions, cancelStudyReminders } from '@/services/notifications';
 import { Badge } from '@/components/Badge';
+import Button from '@/components/Button';
 import { useTheme } from '@/theme/context';
 import { createCommonStyles } from '@/theme/styles';
 import { useLocalSearchParams } from 'expo-router';
@@ -339,9 +340,7 @@ export default function DetailScreen() {
         <StatusBar style={isDark ? 'light' : 'dark'} />
           <View style={common.emptyContainer}>
             <Text style={[common.emptyText, { color: theme.colors.textSecondary }]}>No session for today. Create one from the home screen!</Text>
-            <TouchableOpacity style={[common.primaryButton, { backgroundColor: theme.colors.primary }]} onPress={() => router.replace('/')}> 
-              <Text style={common.buttonText}>Go to Home</Text>
-            </TouchableOpacity>
+            <Button variant="primary" onPress={() => router.replace('/')} style={{ marginTop: 12 }} textStyle={{ color: '#fff' }}>Go to Home</Button>
           </View>
       </View>
     );
@@ -570,12 +569,14 @@ export default function DetailScreen() {
         </View>
 
         {/* ADD task button */}
-        <TouchableOpacity 
-          style={[common.addButton, { backgroundColor: theme.colors.primary }]}
+        <Button
+          variant="primary"
           onPress={() => router.push(`/session/add?sessionId=${currentSession.id}`)}
+          style={{ marginTop: 12, alignSelf: 'stretch' }}
+          textStyle={{ color: '#fff' }}
         >
-          <Text style={common.buttonText}>Add Today Task</Text>
-        </TouchableOpacity>
+          Add Today Task
+        </Button>
       </View>
     
   );

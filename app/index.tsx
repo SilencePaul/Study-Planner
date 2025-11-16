@@ -13,6 +13,7 @@ import { useAppContext } from './context'; // Global state management
 import { Session } from '@/types';
 import { formatDate, formatTime, formatTimer, getCompletionStatus } from '@/utils';// Helper functions
 import { Badge } from '@/components/Badge';
+import Button from '@/components/Button';
 import { useTheme } from '@/theme/context';
 import { createCommonStyles } from '@/theme/styles';
 
@@ -110,10 +111,9 @@ export default function HomeScreen() {
 
       {/*create new study record button*/}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[common.primaryButton, { backgroundColor: theme.colors.primary }]}
+        <Button
+          variant="primary"
           onPress={() => {
-            // Home screen: create session with full ISO datetime
             const now = new Date();
             const todayIso = now.toISOString();
 
@@ -126,26 +126,29 @@ export default function HomeScreen() {
             dispatch({ type: 'ADD_SESSION', payload: newSession });
             router.push(`/Detail/${newSession.id}?isNew=true`);
           }}
+          style={{ marginBottom: 8 }}
+          textStyle={{ color: '#fff' }}
         >
-          <Text style={common.buttonText}>Create New Study Record</Text>
-        </TouchableOpacity>
+          Create New Study Record
+        </Button>
 
-        {/**/}
-        {/*manage assignment button*/}
-        <TouchableOpacity
-          style={[common.secondaryButton, { borderColor: theme.colors.primary }]}
+        <Button
+          variant="secondary"
           onPress={() => router.push('/assignments')}
+          style={{ borderColor: theme.colors.primary, marginBottom: 8 }}
+          textStyle={{ color: theme.colors.primary }}
         >
-          <Text style={[common.secondaryButtonText, { color: theme.colors.primary }]}>Manage Assignments</Text>
-        </TouchableOpacity>
-        
-        {/*settings button*/}
-        <TouchableOpacity
-          style={[common.secondaryButton, { borderColor: theme.colors.primary }]}
+          Manage Assignments
+        </Button>
+
+        <Button
+          variant="secondary"
           onPress={() => router.push('/settings')}
+          style={{ borderColor: theme.colors.primary }}
+          textStyle={{ color: theme.colors.primary }}
         >
-          <Text style={[common.secondaryButtonText, { color: theme.colors.primary }]}>Settings</Text>
-        </TouchableOpacity>
+          Settings
+        </Button>
       </View>
     </View>
   );

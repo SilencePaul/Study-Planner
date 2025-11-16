@@ -1,6 +1,5 @@
 import { AppState, ActionType, Session, Task, Assignment } from '@/types';
 import { generateId } from '@/utils';
-import { saveState } from '@/services/storage';
 
 // reducer
 
@@ -235,9 +234,6 @@ export const appReducer = (state: AppState, action: ActionType): AppState => {
   }
 
   
-  // Persist state to AsyncStorage
-  saveState(newState).catch(console.error);
-
   return newState;
 };
 

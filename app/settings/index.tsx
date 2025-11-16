@@ -3,7 +3,6 @@ import React from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
   Switch,
 } from 'react-native';
@@ -11,6 +10,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useAppContext } from '../context';
 import { useTheme } from '@/theme/context'; // Import useTheme hook
 import { createCommonStyles } from '@/theme/styles';
+import Button from '@/components/Button';
 import { requestPermissions } from '@/services/notifications';
 
 export default function SettingsScreen() {
@@ -61,73 +61,36 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+          <Text style={[common.sectionTitle, { color: theme.colors.text }]}>
             Appearance
           </Text>
           <View style={styles.themeOptions}>
-            <TouchableOpacity
-              style={[
-                styles.themeOption,
-                state.settings.theme === 'light' && [
-                  styles.themeOptionSelected,
-                  { backgroundColor: theme.colors.primary + '20' }
-                ],
-                { borderColor: theme.colors.primary },
-              ]}
+            <Button
+              variant="secondary"
               onPress={() => handleThemeChange('light')}
+              style={[styles.themeOption, { borderColor: theme.colors.primary, marginHorizontal: 4, flex: 1 }, state.settings.theme === 'light' && { backgroundColor: theme.colors.primary + '20' }]}
+              textStyle={[styles.themeOptionText, { color: theme.colors.text, fontWeight: state.settings.theme === 'light' ? 'bold' : 'normal' }]}
             >
-              <Text style={[
-                styles.themeOptionText, 
-                { 
-                  color: theme.colors.text,
-                  fontWeight: state.settings.theme === 'light' ? 'bold' : 'normal'
-                }
-              ]}>
-                Light
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.themeOption,
-                state.settings.theme === 'dark' && [
-                  styles.themeOptionSelected,
-                  { backgroundColor: theme.colors.primary + '20' }
-                ],
-                { borderColor: theme.colors.primary },
-              ]}
+              Light
+            </Button>
+
+            <Button
+              variant="secondary"
               onPress={() => handleThemeChange('dark')}
+              style={[styles.themeOption, { borderColor: theme.colors.primary, marginHorizontal: 4, flex: 1 }, state.settings.theme === 'dark' && { backgroundColor: theme.colors.primary + '20' }]}
+              textStyle={[styles.themeOptionText, { color: theme.colors.text, fontWeight: state.settings.theme === 'dark' ? 'bold' : 'normal' }]}
             >
-              <Text style={[
-                styles.themeOptionText, 
-                { 
-                  color: theme.colors.text,
-                  fontWeight: state.settings.theme === 'dark' ? 'bold' : 'normal'
-                }
-              ]}>
-                Dark
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.themeOption,
-                state.settings.theme === 'auto' && [
-                  styles.themeOptionSelected,
-                  { backgroundColor: theme.colors.primary + '20' }
-                ],
-                { borderColor: theme.colors.primary },
-              ]}
+              Dark
+            </Button>
+
+            <Button
+              variant="secondary"
               onPress={() => handleThemeChange('auto')}
+              style={[styles.themeOption, { borderColor: theme.colors.primary, marginHorizontal: 4, flex: 1 }, state.settings.theme === 'auto' && { backgroundColor: theme.colors.primary + '20' }]}
+              textStyle={[styles.themeOptionText, { color: theme.colors.text, fontWeight: state.settings.theme === 'auto' ? 'bold' : 'normal' }]}
             >
-              <Text style={[
-                styles.themeOptionText, 
-                { 
-                  color: theme.colors.text,
-                  fontWeight: state.settings.theme === 'auto' ? 'bold' : 'normal'
-                }
-              ]}>
-                Auto
-              </Text>
-            </TouchableOpacity>
+              Auto
+            </Button>
           </View>
         </View>
 

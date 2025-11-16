@@ -15,6 +15,7 @@ import { Task } from '@/types';
 import { generateId } from '@/utils';
 import { useTheme } from '@/theme/context';
 import { createCommonStyles } from '@/theme/styles';
+import Button from '@/components/Button';
 import { useLocalSearchParams } from 'expo-router';
 
 
@@ -299,18 +300,23 @@ export default function AddSessionScreen() {
             
         {/* Action Buttons */}
         <View style={styles.actionsRow}>
-          <TouchableOpacity
-            style={[common.primaryButton, { backgroundColor: theme.colors.primary }]}
+          <Button
+            variant="primary"
             onPress={handleSave}
+            style={{ flex: 1, marginRight: 8, backgroundColor: theme.colors.primary }}
+            textStyle={{ color: '#fff' }}
           >
-            <Text style={common.buttonText}>Save</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[common.secondaryButton, { borderColor: theme.colors.error }]}
+            Save
+          </Button>
+
+          <Button
+            variant="secondary"
             onPress={() => router.back()}
+            style={{ flex: 1, borderColor: theme.colors.error }}
+            textStyle={{ color: theme.colors.error }}
           >
-            <Text style={[common.secondaryButtonText, { color: theme.colors.error }]}>Cancel</Text>
-          </TouchableOpacity>
+            Cancel
+          </Button>
         </View>
       </View>
     </ScrollView>

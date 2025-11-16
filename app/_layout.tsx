@@ -1,8 +1,8 @@
 import { Stack } from 'expo-router';
-import { useEffect, useReducer } from 'react';
+import { useEffect, useReducer, useRef } from 'react';
 import { AppState, ActionType } from '@/types';
 import { appReducer, initialState } from '@/features/reducer';
-import { loadState } from '@/services/storage';
+import { loadState, saveState } from '@/services/storage';
 import { AppContext } from './context';
 import { ThemeProvider } from '@/theme/context';
 
@@ -20,6 +20,22 @@ export default function RootLayout() {
         console.error('Error loading state:', error);
       });
   }, []);
+
+  // Persist state with debounce to avoid writing on every single action.
+  const initialLoadRef = useRef(true);
+  useEffect(() => {
+    // Skip persisting immediately after initial load
+    if (initialLoadRef.current) {
+      initialLoadRef.current = false;
+      return;
+    }
+
+    const t = setTimeout(() => {
+      saveState(state).catch((err) => console.error('Error saving state:', err));
+    }, 500);
+
+    return () => clearTimeout(t);
+  }, [state]);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>

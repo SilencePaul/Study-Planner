@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { useEffect } from 'react';
 import { useTheme } from '@/theme/context';
 import { createCommonStyles } from '@/theme/styles';
+import Button from '@/components/Button';
 
 export default function NotFoundScreen() {
   const router = useRouter();
@@ -39,12 +40,14 @@ export default function NotFoundScreen() {
       <View style={[common.container, { backgroundColor: theme.colors.background, alignItems: 'center', justifyContent: 'center' }]}>
         <Text style={[styles.title, { color: theme.colors.text }]}>Unmatched Route</Text>
         <Text style={[styles.subtitle, { color: theme.colors.text } ]}>Page could not be found. Go back.</Text>
-        <TouchableOpacity
-          style={[common.primaryButton, { backgroundColor: theme.colors.primary, marginTop: 20 }]}
+        <Button
+          variant="primary"
           onPress={handleGoHome}
+          style={{ marginTop: 20 }}
+          textStyle={{ color: '#fff' }}
         >
-          <Text style={common.buttonText}>Go to Home</Text>
-        </TouchableOpacity>
+          Go to Home
+        </Button>
       </View>
     </>
   );

@@ -14,6 +14,7 @@ import { formatDate, getDaysUntilDue, sortByDueDate } from '@/utils';
 import { ProgressBar } from '@/components/ProgressBar';
 import { useTheme } from '@/theme/context';
 import { createCommonStyles } from '@/theme/styles';
+import Button from '@/components/Button';
 
 export default function ManageAssignmentsScreen() {
   const router = useRouter();
@@ -117,12 +118,14 @@ export default function ManageAssignmentsScreen() {
         }
       />
 
-      <TouchableOpacity
-        style={[common.addButton, { backgroundColor: theme.colors.primary }]}
+      <Button
+        variant="primary"
         onPress={() => router.push('/assignments/new')}
+        style={{ marginTop: 8 }}
+        textStyle={{ color: '#fff' }}
       >
-        <Text style={common.buttonText}>Add New Assignment</Text>
-      </TouchableOpacity>
+        Add New Assignment
+      </Button>
     </View>
   );
 }

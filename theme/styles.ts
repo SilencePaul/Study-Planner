@@ -5,15 +5,15 @@ export const createCommonStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      padding: 16,
+      padding: theme.spacing.md,
     },
     listContent: {
-      padding: 12,
+      padding: theme.spacing.sm,
     },
     sessionItem: {
-      padding: 12,
-      borderRadius: 6,
-      marginBottom: 6,
+      padding: theme.spacing.sm,
+      borderRadius: theme.borderRadius.md,
+      marginBottom: theme.spacing.xs,
       borderWidth: 1,
       borderColor: theme.colors.border,
       height: 130,
@@ -23,7 +23,7 @@ export const createCommonStyles = (theme: Theme) =>
     dateText: {
       fontSize: 20,
       fontWeight: '600',
-      marginBottom: 10,
+      marginBottom: theme.spacing.sm,
     },
     durationText: {
       fontSize: 35,
@@ -31,15 +31,15 @@ export const createCommonStyles = (theme: Theme) =>
     },
     badgeWrapper: {
       position: 'absolute',
-      top: 12,
-      right: 12,
+      top: theme.spacing.sm,
+      right: theme.spacing.sm,
       zIndex: 10,
     },
     primaryButton: {
-      padding: 12,
-      borderRadius: 8,
+      padding: theme.spacing.md,
+      borderRadius: theme.borderRadius.md,
       alignItems: 'center',
-      marginBottom: 5,
+      marginBottom: theme.spacing.xs,
     },
     buttonText: {
       color: '#FFFFFF',
@@ -47,18 +47,18 @@ export const createCommonStyles = (theme: Theme) =>
       fontWeight: '600',
     },
     secondaryButton: {
-      padding: 10,
-      borderRadius: 8,
+      padding: theme.spacing.sm,
+      borderRadius: theme.borderRadius.md,
       alignItems: 'center',
       borderWidth: 1,
-      marginBottom: 5,
+      marginBottom: theme.spacing.xs,
     },
     secondaryButtonText: {
       fontSize: 16,
       fontWeight: '600',
     },
     emptyContainer: {
-      padding: 32,
+      padding: theme.spacing.xl,
       alignItems: 'center',
     },
     emptyText: {
@@ -69,22 +69,22 @@ export const createCommonStyles = (theme: Theme) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 16,
+      marginBottom: theme.spacing.md,
     },
     timerText: {
       fontSize: 36,
       fontWeight: 'bold',
-      marginBottom: 12,
+      marginBottom: theme.spacing.sm,
       fontFamily: 'monospace',
     },
     sectionTitle: {
       fontSize: 18,
       fontWeight: '600',
-      marginBottom: 8,
+      marginBottom: theme.spacing.sm,
     },
     tipContainer: {
-      padding: 16,
-      borderRadius: 8,
+      padding: theme.spacing.md,
+      borderRadius: theme.borderRadius.md,
     },
     tipText: {
       fontSize: 16,
@@ -95,8 +95,8 @@ export const createCommonStyles = (theme: Theme) =>
       justifyContent: 'space-between',
       alignItems: 'center',
       borderWidth: 1,
-      borderRadius: 8,
-      padding: 12,
+      borderRadius: theme.borderRadius.md,
+      padding: theme.spacing.sm,
     },
     dropdownTriggerText: {
       fontSize: 16,
@@ -109,8 +109,8 @@ export const createCommonStyles = (theme: Theme) =>
       right: 0,
       borderWidth: 1,
       borderTopWidth: 0,
-      borderBottomLeftRadius: 8,
-      borderBottomRightRadius: 8,
+      borderBottomLeftRadius: theme.borderRadius.md,
+      borderBottomRightRadius: theme.borderRadius.md,
       maxHeight: 200,
       shadowColor: '#000',
       shadowOffset: {
@@ -126,9 +126,9 @@ export const createCommonStyles = (theme: Theme) =>
       fontSize: 16,
     },
     addButton: {
-      padding: 16,
-      borderRadius: 8,
+      padding: theme.spacing.md,
+      borderRadius: theme.borderRadius.md,
       alignItems: 'center',
-      marginTop: 8,
+      marginTop: theme.spacing.sm,
     },
   });
