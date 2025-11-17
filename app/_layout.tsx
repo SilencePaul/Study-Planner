@@ -5,6 +5,7 @@ import { appReducer, initialState } from '@/features/reducer';
 import { loadState, saveState } from '@/services/storage';
 import { AppContext } from './context';
 import { ThemeProvider } from '@/theme/context';
+import GamificationHeader from '@/components/GamificationHeader';
 
 // main wrapper component that initializes the app's global state
 
@@ -49,6 +50,7 @@ export default function RootLayout() {
             headerTitleStyle: {
               fontWeight: 'bold',
             },
+            headerRight: () => <GamificationHeader />,
           }}
         >
           {/* Define all screens here */}

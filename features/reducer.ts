@@ -29,6 +29,9 @@ export const initialState: AppState = {
     pedometerEnabled: false,
   },
   activeTimers: {}, // Add this for timmer initial
+  // Gamification defaults
+  xp: 0,
+  level: 0,
 };
 
 export const appReducer = (state: AppState, action: ActionType): AppState => {
@@ -102,14 +105,17 @@ export const appReducer = (state: AppState, action: ActionType): AppState => {
     //
 
     case 'UPDATE_DURATION':
-      newState = {
-        ...state,
-        sessions: state.sessions.map(s =>
-          s.id === action.payload.sessionId
-            ? { ...s, duration: action.payload.duration }
-            : s
-        ),
-      };
+
+      const updatedSessions = state.sessions.map(s =>
+        s.id === action.payload.sessionId
+          ? { ...s, duration: action.payload.duration }
+          : s
+      );
+
+        newState = {
+          ...state,
+          sessions: updatedSessions,
+        };
       break;
 
     // Update reminder interval
@@ -140,12 +146,12 @@ export const appReducer = (state: AppState, action: ActionType): AppState => {
       );
 
       // Recompute affected assignment progress (if the toggled task had an assignmentId)
-      const toggledSession = state.sessions.find(s => s.id === action.payload.sessionId);
-      const toggledTask = toggledSession?.tasks.find(t => t.id === action.payload.taskId);
+      const toggledSessionBefore = state.sessions.find(s => s.id === action.payload.sessionId);
+      const toggledTaskBefore = toggledSessionBefore?.tasks.find(t => t.id === action.payload.taskId);
 
       let updatedAssignments = state.assignments;
-      if (toggledTask && toggledTask.assignmentId) {
-        const assignmentId = toggledTask.assignmentId;
+      if (toggledTaskBefore && toggledTaskBefore.assignmentId) {
+        const assignmentId = toggledTaskBefore.assignmentId;
 
         // Build a temporary state reflecting the toggled sessions to compute progress
         const tempState: AppState = { ...state, sessions: sessionsWithToggledTask };
@@ -156,10 +162,28 @@ export const appReducer = (state: AppState, action: ActionType): AppState => {
         );
       }
 
+      // Award XP for newly completed tasks (only when toggled to completed)
+      let newXp = state.xp || 0;
+      const toggledSessionAfter = sessionsWithToggledTask.find(s => s.id === action.payload.sessionId);
+      const toggledTaskAfter = toggledSessionAfter?.tasks.find(t => t.id === action.payload.taskId);
+      if (toggledTaskAfter && toggledTaskAfter.completed) {
+        const baseFullXp = 100;
+        if (toggledTaskAfter.goal === 'full') {
+          newXp += baseFullXp;
+        } else {
+          const pct = typeof toggledTaskAfter.partialPercent === 'number' ? toggledTaskAfter.partialPercent : 50;
+          newXp += Math.round(baseFullXp * (pct / 100));
+        }
+      }
+
+      const newLevel = Math.floor((newXp || 0) / 500);
+
       newState = {
         ...state,
         sessions: sessionsWithToggledTask,
         assignments: updatedAssignments,
+        xp: newXp,
+        level: newLevel,
       };
       break;
     }
@@ -261,10 +285,12 @@ export const appReducer = (state: AppState, action: ActionType): AppState => {
       break;
 
     case 'LOAD_STATE':
-      newState = {
-        ...action.payload,
-        activeTimers: action.payload.activeTimers || {},
-      };
+        // Load saved state; keep active timers defaulted if missing.
+        newState = {
+          ...action.payload,
+          activeTimers: action.payload.activeTimers || {},
+        };
+        break;
       break;
 
 

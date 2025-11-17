@@ -12,5 +12,3 @@ export default function App() {
     </View>
   );
 }
-
-// Local styles removed; use `createCommonStyles` from `theme/styles` instead.

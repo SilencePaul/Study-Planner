@@ -35,6 +35,9 @@ export interface AppState {
     theme: 'light' | 'dark' | 'auto';
     pedometerEnabled: boolean;
   };
+  // Gamification
+  xp?: number;
+  level?: number;
 }
 
 export type ActionType =
@@ -56,3 +59,4 @@ export type ActionType =
   | { type: 'INCREMENT_TIMER'; payload: { sessionId: string } }
   | { type: 'RESET_TIMER'; payload: { sessionId: string } }
   | { type: 'UPDATE_ASSIGNMENT_PROGRESS'; payload: { assignmentId: string; progress: number } };
+
