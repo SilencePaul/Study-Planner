@@ -5,7 +5,10 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
-  ScrollView, 
+  ScrollView,
+  Modal,
+  TouchableWithoutFeedback,
+  Dimensions,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -179,8 +182,8 @@ export default function DetailScreen() {
         setLocalIntervalCounter(prev => {
           const next = prev + 1;
 
-          // When reaching the configured interval (in minutes), present a notification
-          if (next >= reminderInterval * 60) {
+          // When reaching the configured interval (in seconds), present a notification
+          if (reminderInterval && next >= reminderInterval) {
             // reset counter to 0 to repeat
             // NOTE: do the notification asynchronously but don't block the UI update
             (async () => {
@@ -194,14 +197,19 @@ export default function DetailScreen() {
                 }
 
                 if (finalStatus === 'granted') {
+                  // Build a readable label for seconds/minutes
+                  const humanLabel = reminderInterval >= 60
+                    ? `${Math.floor(reminderInterval / 60)} minute(s)`
+                    : `${reminderInterval} second(s)`;
+
                   await Notifications.scheduleNotificationAsync({
                     content: {
                       title: '📚 Study Reminder',
-                      body: `Time to study! You set reminders every ${reminderInterval} minute(s).`,
+                      body: `Time to study! You set reminders every ${humanLabel}.`,
                       data: {
                         sessionId: currentSession.id,
                         type: 'study-reminder-local',
-                        intervalMinutes: reminderInterval
+                        intervalSeconds: reminderInterval
                       }
                     },
                     // Trigger immediately
@@ -472,36 +480,75 @@ export default function DetailScreen() {
               </Text>
             </TouchableOpacity>
 
-            {/* Dropdown List */}
-            {dropdownVisible && (
-              <View style={[
-                common.dropdownList,
-                { 
-                  backgroundColor: theme.colors.surface,
-                  borderColor: theme.colors.border,
-                },
-              ]}>
-                <ScrollView 
-                  style={styles.dropdownScrollView}
-                  nestedScrollEnabled={true}
-                >
-                  {REMINDER_INTERVALS.map((interval) => (
-                    <TouchableOpacity
-                      key={interval.value || 'none'}
-                      style={[
-                        styles.dropdownItem,
-                        reminderInterval === interval.value && styles.dropdownItemSelected,
-                      ]}
-                      onPress={() => handleSelectInterval(interval.value)}
-                    >
-                      <Text style={[common.dropdownItemText, { color: theme.colors.text }]}>
-                        {interval.label}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
+            {/* Dropdown List rendered in a Modal to avoid clipping by other lists */}
+            <Modal
+              visible={dropdownVisible}
+              transparent
+              animationType="fade"
+              onRequestClose={() => setDropdownVisible(false)}
+            >
+              <TouchableWithoutFeedback onPress={() => setDropdownVisible(false)}>
+                <View style={styles.modalOverlay} />
+              </TouchableWithoutFeedback>
+
+              <View style={styles.modalContainer} pointerEvents="box-none">
+                <View style={[
+                  styles.modalCard,
+                  { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }
+                ]}>
+                  <ScrollView style={styles.modalScroll} nestedScrollEnabled>
+                    {(() => {
+                      const quickOptions = REMINDER_INTERVALS.filter(i => typeof i.value === 'number' && i.value < 60);
+                      const minuteOptions = REMINDER_INTERVALS.filter(i => (typeof i.value === 'number' && i.value >= 60) || i.value === undefined);
+
+                      return (
+                        <>
+                          {quickOptions.length > 0 && (
+                            <>
+                              <Text style={[styles.dropdownSectionHeader, { color: theme.colors.textSecondary }]}>Quick Test</Text>
+                              {quickOptions.map((interval) => (
+                                <TouchableOpacity
+                                  key={String(interval.value)}
+                                  style={[
+                                    styles.dropdownItem,
+                                    reminderInterval === interval.value && styles.dropdownItemSelected,
+                                  ]}
+                                  onPress={() => { handleSelectInterval(interval.value); }}
+                                >
+                                  <Text style={[common.dropdownItemText, { color: theme.colors.text }]}>
+                                    {interval.label}
+                                  </Text>
+                                </TouchableOpacity>
+                              ))}
+                            </>
+                          )}
+
+                          {minuteOptions.length > 0 && (
+                            <>
+                              <Text style={[styles.dropdownSectionHeader, { color: theme.colors.textSecondary }]}>Minutes</Text>
+                              {minuteOptions.map((interval) => (
+                                <TouchableOpacity
+                                  key={interval.value === undefined ? 'none' : String(interval.value)}
+                                  style={[
+                                    styles.dropdownItem,
+                                    reminderInterval === interval.value && styles.dropdownItemSelected,
+                                  ]}
+                                  onPress={() => { handleSelectInterval(interval.value); }}
+                                >
+                                  <Text style={[common.dropdownItemText, { color: theme.colors.text }]}>
+                                    {interval.label}
+                                  </Text>
+                                </TouchableOpacity>
+                              ))}
+                            </>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </ScrollView>
+                </View>
               </View>
-            )}
+            </Modal>
           </View>
         </View>
 
@@ -601,7 +648,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   dropdownContainer: {
-    zIndex: 1,
+    zIndex: 1000,
   },
   dropdownArrow: {
     fontSize: 12,
@@ -616,6 +663,39 @@ const styles = StyleSheet.create({
     borderBottomColor: '#f0f0f0',
   },
   dropdownItemSelected: {},
+  dropdownSectionHeader: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 12,
+    fontWeight: '600',
+    opacity: 0.8,
+  },
+  modalOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#00000066',
+  },
+  modalContainer: {
+    position: 'absolute',
+    top: 80,
+    left: 16,
+    right: 16,
+    bottom: 16,
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+  },
+  modalCard: {
+    borderRadius: 12,
+    borderWidth: 1,
+    overflow: 'hidden',
+    maxHeight: Dimensions.get('window').height * 0.7,
+  },
+  modalScroll: {
+    padding: 8,
+  },
   tasksContainer: {
     height: 225,
   },

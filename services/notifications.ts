@@ -42,7 +42,7 @@ export const checkPermissions = async (): Promise<boolean> => {
 
 // Improved study reminder scheduling
 export const scheduleStudyReminder = async (
-  intervalMinutes: number,
+  intervalSeconds: number,
   sessionId: string
 ): Promise<string | null> => {
   try {
@@ -53,9 +53,9 @@ export const scheduleStudyReminder = async (
       return null;
     }
 
-    // Validate interval
-    if (intervalMinutes < 1) {
-      console.error('Interval must be at least 1 minute');
+    // Validate interval (seconds)
+    if (intervalSeconds < 1) {
+      console.error('Interval must be at least 1 second');
       return null;
     }
 
@@ -64,21 +64,23 @@ export const scheduleStudyReminder = async (
     await Notifications.scheduleNotificationAsync({
       content: {
         title: '📚 Study Reminder',
-        body: `Time to study! You scheduled a reminder for every ${intervalMinutes} minutes.`,
+        body: `Time to study! You scheduled a reminder every ${
+          intervalSeconds >= 60 ? Math.floor(intervalSeconds / 60) + ' minute(s)' : intervalSeconds + ' second(s)'
+        }.`,
         sound: 'default',
         data: { 
           sessionId, 
           type: 'study-reminder',
-          intervalMinutes 
+          intervalSeconds 
         },
       },
       trigger: {
-        seconds: intervalMinutes * 60,
+        seconds: intervalSeconds,
         repeats: true,
       } as Notifications.TimeIntervalTriggerInput,
     });
     
-    console.log('✅ Study reminder scheduled:', identifier, 'every', intervalMinutes, 'minutes');
+    console.log('✅ Study reminder scheduled:', identifier, 'every', intervalSeconds, 'seconds');
     return identifier;
   } catch (error) {
     console.error('❌ Error scheduling study reminder:', error);
@@ -110,20 +112,20 @@ export const cancelStudyReminders = async (sessionId: string): Promise<void> => 
 // Improved update function
 export const updateStudyReminder = async (
   sessionId: string, 
-  intervalMinutes: number | undefined
+  intervalSeconds: number | undefined
 ): Promise<string | null> => {
   try {
     // Always cancel existing reminders first
     await cancelStudyReminders(sessionId);
     
     // If no interval specified, just cancel (return null)
-    if (!intervalMinutes || intervalMinutes < 1) {
+    if (!intervalSeconds || intervalSeconds < 1) {
       console.log('Study reminders cancelled for session:', sessionId);
       return null;
     }
     
     // Schedule new reminder with validated interval
-    return await scheduleStudyReminder(intervalMinutes, sessionId);
+    return await scheduleStudyReminder(intervalSeconds, sessionId);
   } catch (error) {
     console.error('Error updating study reminder:', error);
     return null;

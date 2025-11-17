@@ -111,7 +111,9 @@ export const createCommonStyles = (theme: Theme) =>
       borderTopWidth: 0,
       borderBottomLeftRadius: theme.borderRadius.md,
       borderBottomRightRadius: theme.borderRadius.md,
-      maxHeight: 200,
+      // Allow larger dropdowns on small screens and enable scrolling
+      maxHeight: 360,
+      paddingBottom: theme.spacing.sm,
       shadowColor: '#000',
       shadowOffset: {
         width: 0,
@@ -119,7 +121,7 @@ export const createCommonStyles = (theme: Theme) =>
       },
       shadowOpacity: 0.25,
       shadowRadius: 3.84,
-      elevation: 5,
+      elevation: 8,
       zIndex: 1000,
     },
     dropdownItemText: {
