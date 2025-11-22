@@ -120,7 +120,7 @@ export default function DetailScreen() {
     await handleReminderChange(value);
     setDropdownVisible(false);
   };
-  /////// for reminder interval dropdown
+
 
   useEffect(() => {
     // Load study tip
@@ -130,7 +130,6 @@ export default function DetailScreen() {
   }, []);
 
   // Timer effect
-  // Timer effect — replace existing
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
 
