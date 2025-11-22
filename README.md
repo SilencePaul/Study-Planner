@@ -7,9 +7,9 @@ Final Report (README.md)
 
 |Member | Name | Student Number | 
 |------|------|----------------|
-|A| BINBIN WANG | 1011770460 | 
-|B| Yiming Liu  | 1011337402 | 
-|C| Yalin Tuo | 1006033196 | 
+|1| BINBIN WANG | 1011770460 | 
+|2| Yiming Liu  | 1011337402 | 
+|3| Yalin Tuo | 1006033196 | 
 
 ## 2. Motivation
 
