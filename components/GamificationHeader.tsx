@@ -34,24 +34,64 @@ export default function GamificationHeader() {
   const progressPct = Math.min(1, progressToNext / XP_PER_LEVEL);
 
   return (
-    <View style={styles.container}> 
-      <View style={styles.left}> 
-        <Text style={[styles.level, { color: theme.colors.text }]}>{`Lv ${level}`}</Text>
-        <View style={styles.xpBarBackground}>
-          <Animated.View style={[styles.xpBarFill, { width: `${progressPct * 100}%`, backgroundColor: theme.colors.secondary }]} />
-        </View>
+    <View style={styles.container}>
+      {/* 上面一行：小号文字 + 等级 */}
+      <View style={styles.levelRow}>
+        <Text
+          style={[
+            styles.levelLabel,
+            { color: theme.colors.text + '88' as string },
+          ]}
+        >
+          Level
+        </Text>
+        <Text
+          style={[
+            styles.levelValue,
+            { color: theme.colors.text },
+          ]}
+        >
+          {`Lv ${level}`}
+        </Text>
       </View>
 
+      {/* 下面一条细进度条 */}
+      <View style={styles.xpBarBackground}>
+        <Animated.View
+          style={[
+            styles.xpBarFill,
+            {
+              width: `${progressPct * 100}%`,
+              backgroundColor: theme.colors.secondary,
+            },
+          ]}
+        />
+      </View>
+
+      {/* XP 增加的浮动 toast */}
       {toastText && (
         <Animated.View
           pointerEvents="none"
           style={[
             styles.toast,
             {
-              opacity: toastAnim.interpolate({ inputRange: [0, 0.1, 0.9, 1], outputRange: [0, 1, 1, 0] }),
+              opacity: toastAnim.interpolate({
+                inputRange: [0, 0.1, 0.9, 1],
+                outputRange: [0, 1, 1, 0],
+              }),
               transform: [
-                { translateY: toastAnim.interpolate({ inputRange: [0, 1], outputRange: [10, -8] }) },
-                { scale: toastAnim.interpolate({ inputRange: [0, 0.2, 1], outputRange: [0.9, 1.05, 1] }) },
+                {
+                  translateY: toastAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [6, -6],
+                  }),
+                },
+                {
+                  scale: toastAnim.interpolate({
+                    inputRange: [0, 0.2, 1],
+                    outputRange: [0.9, 1.05, 1],
+                  }),
+                },
               ],
             },
           ]}
@@ -64,46 +104,49 @@ export default function GamificationHeader() {
 }
 
 const styles = StyleSheet.create({
+  // 整体变成一个小信息块，竖直排布
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
+    justifyContent: 'center',
     paddingRight: 8,
   },
-  left: {
-    flexDirection: 'column',
-    alignItems: 'flex-end',
-    marginRight: 8,
+  levelRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
   },
-  level: {
-    fontSize: 12,
+  levelLabel: {
+    fontSize: 10,
+    fontWeight: '500',
+    marginRight: 4,
+  },
+  levelValue: {
+    fontSize: 14,
     fontWeight: '700',
   },
   xpBarBackground: {
     width: 80,
-    height: 6,
-    backgroundColor: '#ffffff22',
-    borderRadius: 6,
+    height: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)', // 在蓝色 header 上比较柔和
+    borderRadius: 999,
     overflow: 'hidden',
     marginTop: 4,
   },
   xpBarFill: {
     height: '100%',
-  },
-  right: {
-    marginLeft: 4,
+    borderRadius: 999,
   },
   toast: {
     position: 'absolute',
-    top: -30,
+    top: -22,
     right: 0,
-    backgroundColor: '#000000ee',
+    backgroundColor: '#000000dd',
     paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
   },
   toastText: {
     color: '#fff',
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 11,
+    fontWeight: '600',
   },
 });
