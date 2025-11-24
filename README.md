@@ -336,19 +336,19 @@ They can launch the app through a simulator or Expo Go on a physical device.
 
 ## 9. Individual Contributions
 
-### Member A BINBIN WANG
+### Member 1 BINBIN WANG
 - Implemented the Home screen interface and logic.
 - Developed the study timer system (start, pause, reset).
 - Implemented the reminder interval logic and local notification triggers.
 - Added break suggestion logic and study tips integration.
 
-### Member B Yiming Liu 
+### Member 2 Yiming Liu 
 - Developed the Assignment module (list, create, edit, delete).
 - Designed and implemented assignment progress calculation.
 - Built reusable UI components: ProgressBar and Badge.
 - Implemented due date color coding and sorting behavior.
 
-### Member C Yalin Tuo 
+### Member 3 Yalin Tuo 
 - Designed global state architecture using Context API + useReducer.
 - Implemented persistent storage with AsyncStorage wrapper.
 - Built the theme system (light, dark, auto modes).
