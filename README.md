@@ -225,23 +225,22 @@ Clone the repository and install dependencies:
 ```bash
 git clone <your-repo-url>
 cd study-planner
-npm install
+npm install --legacy-peer-deps
 ```
 ### 7.3 Running the App
 
 Start the development server:
 ```bash
-npm start
+npm expo start
 ```
-Running on a physical device (Expo Go):
-- Install Expo Go from the App Store or Google Play.
-- Scan the QR code shown in the terminal or the browser.
+Open the app:
 
-Running on iOS Simulator (macOS or Android Emulator):
-```bash
-npm run ios
-npm run android
-```
+- Press i to launch the iOS simulator, or
+
+- Scan the QR code using Expo Go on a physical device.
+All core technical requirements (navigation, state management, AsyncStorage persistence, study reminders with Expo Notifications, and API integration) run entirely in this local environment, as required by the course.
+
+
 ### 7.4 Project Structure Overview
 ```text
 my-app/
@@ -336,19 +335,19 @@ They can launch the app through a simulator or Expo Go on a physical device.
 
 ## 9. Individual Contributions
 
-### Member A BINBIN WANG
+### Member 1 BINBIN WANG
 - Implemented the Home screen interface and logic.
 - Developed the study timer system (start, pause, reset).
 - Implemented the reminder interval logic and local notification triggers.
 - Added break suggestion logic and study tips integration.
 
-### Member B Yiming Liu 
+### Member 2 Yiming Liu 
 - Developed the Assignment module (list, create, edit, delete).
 - Designed and implemented assignment progress calculation.
 - Built reusable UI components: ProgressBar and Badge.
 - Implemented due date color coding and sorting behavior.
 
-### Member C Yalin Tuo 
+### Member 3 Yalin Tuo 
 - Designed global state architecture using Context API + useReducer.
 - Implemented persistent storage with AsyncStorage wrapper.
 - Built the theme system (light, dark, auto modes).
