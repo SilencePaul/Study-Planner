@@ -1,9 +1,8 @@
-// constants/index.ts
 export const STORAGE_KEYS = {
   SESSIONS: 'study-sessions',
   ASSIGNMENTS: 'assignments', 
   SETTINGS: 'app-settings',
-  ACTIVE_TIMERS: 'active-timers', // Add this
+  ACTIVE_TIMERS: 'active-timers', 
 } as const;
 
 export const REMINDER_INTERVALS = [

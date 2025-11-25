@@ -24,8 +24,6 @@ import { createCommonStyles } from '@/theme/styles';
 import { useLocalSearchParams } from 'expo-router';
 import * as Notifications from 'expo-notifications'; 
 
-// Detail screen
-
 export default function DetailScreen() {
   const router = useRouter();
   const { state, dispatch } = useAppContext();
@@ -48,15 +46,12 @@ export default function DetailScreen() {
   // LOCAL interval counter (in seconds) — hidden from UI
   const [localIntervalCounter, setLocalIntervalCounter] = useState<number>(0);
 
-    /////// for reminder interval dropdown
   const [dropdownVisible, setDropdownVisible] = useState(false);
   
-  // ADD THE DEBUG EFFECT HERE - with your other useEffect hooks
   useEffect(() => {
     const debugNotifications = async () => {
       console.log('🔍 DEBUGGING NOTIFICATION SOURCE');
       
-      // 1. Get ALL scheduled notifications
       const scheduled = await Notifications.getAllScheduledNotificationsAsync();
       
       if (scheduled.length > 0) {
@@ -76,7 +71,7 @@ export default function DetailScreen() {
     };
 
     debugNotifications();
-  }, []); // Empty dependency array - runs once when component mounts
+  }, []);
 
   const getLabelForValue = (value: number | undefined) => {
     const found = REMINDER_INTERVALS.find(i => i.value === value);
@@ -89,7 +84,6 @@ export default function DetailScreen() {
     if (!currentSession) return;
 
     try {
-      // 1) Persist the chosen interval in global state (no scheduling here)
       dispatch({
         type: 'UPDATE_REMINDER_INTERVAL',
         payload: {
@@ -98,16 +92,9 @@ export default function DetailScreen() {
         }
       });
 
-      // 2) Update local UI state
       setReminderInterval(interval);
 
-      // 3) Reset the local hidden interval counter to 0
       setLocalIntervalCounter(0);
-
-      // 4) IMPORTANT: do NOT force-start the counter here.
-      //    - If global timer (isRunning) is already true, the local counter effect will run and start counting from 0.
-      //    - If global timer is false, we leave it stopped (no auto-start).
-      // (No call to setIsRunning(true) here)
 
       console.log('Reminder interval updated locally (counter reset, no auto-start if global timer not running).', interval);
     } catch (error) {
@@ -141,7 +128,6 @@ export default function DetailScreen() {
           payload: { sessionId: currentSession.id }
         });
 
-        // Get latest timer from the `timer` variable (derived above)
         const currentTimer = timer || 0;
         if ((currentTimer + 1) % 60 === 0) {
           dispatch({
@@ -173,7 +159,6 @@ export default function DetailScreen() {
       return;
     }
 
-    // Only count when isRunning is true and we have a current session
     let localTimer: NodeJS.Timeout | undefined;
 
     if (isRunning && currentSession) {
@@ -183,8 +168,7 @@ export default function DetailScreen() {
 
           // When reaching the configured interval (in seconds), present a notification
           if (reminderInterval && next >= reminderInterval) {
-            // reset counter to 0 to repeat
-            // NOTE: do the notification asynchronously but don't block the UI update
+
             (async () => {
               try {
                 // Double-check permission at the moment of showing the notification
@@ -222,7 +206,7 @@ export default function DetailScreen() {
               }
             })();
 
-            return 0; // reset to start counting again after notification
+            return 0;
           }
 
           return next;
@@ -239,15 +223,13 @@ export default function DetailScreen() {
     // Reset timer function using global state
   const handleResetTimer = () => {
     if (currentSession) {
-      // reset global timer (existing)
       dispatch({
         type: 'RESET_TIMER',
         payload: { sessionId: currentSession.id }
       });
 
-      // Reset local interval counter, and auto-start after reset (per spec)
       setLocalIntervalCounter(0);
-      setIsRunning(true); // auto-start after reset
+      setIsRunning(true);
     }
   };
 
@@ -257,7 +239,6 @@ export default function DetailScreen() {
     if (currentSession) {
       const task = currentSession.tasks.find(t => t.id === taskId);
       
-      // First toggle the task completion status
       dispatch({
         type: 'TOGGLE_TASK_COMPLETE',
         payload: {
@@ -266,7 +247,6 @@ export default function DetailScreen() {
         },
       });
 
-      // Progress is recalculated centrally in the reducer; no component-level update required.
     }
   };
   

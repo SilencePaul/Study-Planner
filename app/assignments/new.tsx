@@ -111,7 +111,7 @@ export default function NewAssignmentScreen() {
             style={{ flex: 1, marginRight: 8, backgroundColor: theme.colors.primary }}
             textStyle={{ color: '#fff' }}
           >
-            ✅ Save
+            Save
           </Button>
 
           <Button

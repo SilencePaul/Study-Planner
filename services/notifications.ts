@@ -46,14 +46,12 @@ export const scheduleStudyReminder = async (
   sessionId: string
 ): Promise<string | null> => {
   try {
-    // Check permissions first
     const hasPermission = await checkPermissions();
     if (!hasPermission) {
       console.warn('Notification permissions not granted');
       return null;
     }
 
-    // Validate interval (seconds)
     if (intervalSeconds < 1) {
       console.error('Interval must be at least 1 second');
       return null;
@@ -109,22 +107,19 @@ export const cancelStudyReminders = async (sessionId: string): Promise<void> => 
   }
 };
 
-// Improved update function
+// Update function
 export const updateStudyReminder = async (
   sessionId: string, 
   intervalSeconds: number | undefined
 ): Promise<string | null> => {
   try {
-    // Always cancel existing reminders first
     await cancelStudyReminders(sessionId);
     
-    // If no interval specified, just cancel (return null)
     if (!intervalSeconds || intervalSeconds < 1) {
       console.log('Study reminders cancelled for session:', sessionId);
       return null;
     }
     
-    // Schedule new reminder with validated interval
     return await scheduleStudyReminder(intervalSeconds, sessionId);
   } catch (error) {
     console.error('Error updating study reminder:', error);
@@ -135,14 +130,12 @@ export const updateStudyReminder = async (
 // Improved assignment reminders with proper date triggers
 export const scheduleAssignmentReminders = async (assignments: Assignment[]): Promise<void> => {
   try {
-    // Check permissions
     const hasPermission = await checkPermissions();
     if (!hasPermission) {
       console.warn('Cannot schedule assignment reminders - permissions not granted');
       return;
     }
 
-    // Cancel existing assignment reminders
     const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
     const assignmentReminders = scheduledNotifications.filter(notification => {
       const data = notification.content.data as any;

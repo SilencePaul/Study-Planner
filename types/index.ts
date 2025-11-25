@@ -5,23 +5,23 @@ export interface Task {
   completed: boolean;
   description?: string;
   assignmentId?: string;
-  partialPercent?: number; // Optional: contribution percentage when goal === 'partial'
+  partialPercent?: number; 
 }
 
 export interface Session {
   id: string;
-  date: string; // ISO date string
-  duration: number; // in minutes
+  date: string;
+  duration: number; 
   
   tasks: Task[];
-  reminderInterval?: number; // minutes: 25, 45, 60, or undefined
+  reminderInterval?: number; 
 }
 
 export interface Assignment {
   id: string;
   name: string;
-  dueDate: string; // ISO date string
-  progress: number; // 0-100
+  dueDate: string; 
+  progress: number; 
 }
 
 export type CompletionStatus = 'gold' | 'silver' | 'red';
@@ -29,7 +29,7 @@ export type CompletionStatus = 'gold' | 'silver' | 'red';
 export interface AppState {
   sessions: Session[];
   assignments: Assignment[];
-  activeTimers: { [sessionId: string]: number }; // Ensure this exists
+  activeTimers: { [sessionId: string]: number };
   settings: {
     notificationsEnabled: boolean;
     theme: 'light' | 'dark' | 'auto';

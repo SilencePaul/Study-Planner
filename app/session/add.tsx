@@ -70,7 +70,6 @@ export default function AddSessionScreen() {
       return false;
     }
     
-    // Allow adding the same assignment multiple times as long as it's not completed.
     return true;
   };
 

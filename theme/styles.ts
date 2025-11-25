@@ -111,7 +111,6 @@ export const createCommonStyles = (theme: Theme) =>
       borderTopWidth: 0,
       borderBottomLeftRadius: theme.borderRadius.md,
       borderBottomRightRadius: theme.borderRadius.md,
-      // Allow larger dropdowns on small screens and enable scrolling
       maxHeight: 360,
       paddingBottom: theme.spacing.sm,
       shadowColor: '#000',

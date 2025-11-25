@@ -1,7 +1,7 @@
 import { AppState, ActionType, Session, Task, Assignment } from '@/types';
 import { generateId } from '@/utils';
 
-// Helper: calculate assignment progress from authoritative state (all sessions/tasks)
+// Calculate assignment progress
 const calculateAssignmentProgress = (state: AppState, assignmentId: string): number => {
   const allAssignmentTasks = state.sessions.flatMap(s => s.tasks.filter(t => t.assignmentId === assignmentId));
 
@@ -9,16 +9,13 @@ const calculateAssignmentProgress = (state: AppState, assignmentId: string): num
   const hasCompletedFull = allAssignmentTasks.some(t => t.goal === 'full' && t.completed);
   if (hasCompletedFull) return 100;
 
-  // Sum partialPercent of completed partial tasks. If partialPercent missing, default to 50.
+  // Partial Percent
   const partialSum = allAssignmentTasks
     .filter(t => t.goal === 'partial' && t.completed)
     .reduce((acc, t) => acc + (typeof t.partialPercent === 'number' ? t.partialPercent : 50), 0);
 
-  // Cap between 0 and 100 (but full tasks already handled above)
   return Math.max(0, Math.min(100, partialSum));
 };
-
-// reducer
 
 export const initialState: AppState = {
   sessions: [],
@@ -28,8 +25,7 @@ export const initialState: AppState = {
     theme: 'auto',
     pedometerEnabled: false,
   },
-  activeTimers: {}, // Add this for timmer initial
-  // Gamification defaults
+  activeTimers: {}, 
   xp: 0,
   level: 0,
 };
@@ -42,9 +38,9 @@ export const appReducer = (state: AppState, action: ActionType): AppState => {
       newState = {
         ...state,
         sessions: [...state.sessions, action.payload],
-        activeTimers: { // for timer
+        activeTimers: {
           ...state.activeTimers,
-          [action.payload.id]: 0 // Initialize timer for new session
+          [action.payload.id]: 0 
         },
       };
       break;
@@ -62,8 +58,7 @@ export const appReducer = (state: AppState, action: ActionType): AppState => {
       
     case 'DELETE_SESSION':
       const newActiveTimers = { ...state.activeTimers };
-      delete newActiveTimers[action.payload]; // Remove timer when session is deleted
-      
+      delete newActiveTimers[action.payload]; 
       newState = {
         ...state,
         sessions: state.sessions.filter(s => s.id !== action.payload),
@@ -71,7 +66,7 @@ export const appReducer = (state: AppState, action: ActionType): AppState => {
       };
       break;
 
-    // Add these new timer cases:
+    // New timer actions
     case 'SET_TIMER':
       newState = {
         ...state,
@@ -102,7 +97,6 @@ export const appReducer = (state: AppState, action: ActionType): AppState => {
         },
       };
       break;
-    //
 
     case 'UPDATE_DURATION':
 
@@ -145,7 +139,6 @@ export const appReducer = (state: AppState, action: ActionType): AppState => {
           : s
       );
 
-      // Recompute affected assignment progress (if the toggled task had an assignmentId)
       const toggledSessionBefore = state.sessions.find(s => s.id === action.payload.sessionId);
       const toggledTaskBefore = toggledSessionBefore?.tasks.find(t => t.id === action.payload.taskId);
 
@@ -153,7 +146,6 @@ export const appReducer = (state: AppState, action: ActionType): AppState => {
       if (toggledTaskBefore && toggledTaskBefore.assignmentId) {
         const assignmentId = toggledTaskBefore.assignmentId;
 
-        // Build a temporary state reflecting the toggled sessions to compute progress
         const tempState: AppState = { ...state, sessions: sessionsWithToggledTask };
         const newProgress = calculateAssignmentProgress(tempState, assignmentId);
 
@@ -189,7 +181,6 @@ export const appReducer = (state: AppState, action: ActionType): AppState => {
     }
     
     case 'UPDATE_ASSIGNMENT_PROGRESS':
-      // Keep this action but it's recommended to prefer automatic recomputation.
       newState = {
         ...state,
         assignments: state.assignments.map(assignment =>
@@ -207,7 +198,6 @@ export const appReducer = (state: AppState, action: ActionType): AppState => {
           : s
       );
 
-      // If task belongs to an assignment, recompute that assignment's progress
       let updatedAssignmentsAdd = state.assignments;
       if (action.payload.task.assignmentId) {
         const tempState: AppState = { ...state, sessions: sessionsWithAddedTask };
@@ -233,7 +223,6 @@ export const appReducer = (state: AppState, action: ActionType): AppState => {
           : s
       );
 
-      // Find the deleted task's assignmentId by scanning previous state
       const sessionBefore = state.sessions.find(s => s.id === action.payload.sessionId);
       const deletedTask = sessionBefore?.tasks.find(t => t.id === action.payload.taskId);
 
@@ -285,7 +274,6 @@ export const appReducer = (state: AppState, action: ActionType): AppState => {
       break;
 
     case 'LOAD_STATE':
-        // Load saved state; keep active timers defaulted if missing.
         newState = {
           ...action.payload,
           activeTimers: action.payload.activeTimers || {},

@@ -35,7 +35,7 @@ export default function GamificationHeader() {
 
   return (
     <View style={styles.container}>
-      {/* 上面一行：小号文字 + 等级 */}
+      {/* Level */}
       <View style={styles.levelRow}>
         <Text
           style={[
@@ -55,7 +55,7 @@ export default function GamificationHeader() {
         </Text>
       </View>
 
-      {/* 下面一条细进度条 */}
+      {/* Small progress bar */}
       <View style={styles.xpBarBackground}>
         <Animated.View
           style={[
@@ -68,7 +68,7 @@ export default function GamificationHeader() {
         />
       </View>
 
-      {/* XP 增加的浮动 toast */}
+      {/* XP animation toast */}
       {toastText && (
         <Animated.View
           pointerEvents="none"
@@ -104,7 +104,6 @@ export default function GamificationHeader() {
 }
 
 const styles = StyleSheet.create({
-  // 整体变成一个小信息块，竖直排布
   container: {
     alignItems: 'flex-end',
     justifyContent: 'center',
@@ -126,7 +125,7 @@ const styles = StyleSheet.create({
   xpBarBackground: {
     width: 80,
     height: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)', // 在蓝色 header 上比较柔和
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
     borderRadius: 999,
     overflow: 'hidden',
     marginTop: 4,

@@ -22,7 +22,7 @@ export default function SettingsScreen() {
     if (value) {
       const hasPermission = await requestPermissions();
       if (!hasPermission) {
-        return; // Don't update if permission denied
+        return;
       }
     }
     dispatch({

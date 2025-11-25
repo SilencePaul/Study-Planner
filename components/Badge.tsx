@@ -43,11 +43,8 @@ export const Badge: React.FC<BadgeProps> = ({ status, theme }) => {
   useEffect(() => {
     // trigger pop animation when status transitions to gold or silver
     if (prevStatus.current !== status && (status === 'gold' || status === 'silver')) {
-      // show overlay medal
       setShowMedal(true);
-      // show JS confetti (pure Animated) for Expo Go compatibility
       setShowConfetti(true);
-      // Accessibility announcement
       const announce = `${status === 'gold' ? 'Gold' : 'Silver'} badge unlocked.`;
       AccessibilityInfo.announceForAccessibility(announce);
       scale.setValue(0);
@@ -74,14 +71,11 @@ export const Badge: React.FC<BadgeProps> = ({ status, theme }) => {
         }),
       ]).start(() => {
         setShowMedal(false);
-        // run particle animations
         const animations = particles.map((p) => {
-          // randomize targets
-          const toX = (Math.random() - 0.5) * 120; // -60..60
-          const toY = - (80 + Math.random() * 120); // -80..-200
+          const toX = (Math.random() - 0.5) * 120;
+          const toY = - (80 + Math.random() * 120);
           const toRot = Math.random() * 360;
 
-          // reset values
           p.x.setValue(0);
           p.y.setValue(0);
           p.rot.setValue(0);
@@ -139,7 +133,6 @@ export const Badge: React.FC<BadgeProps> = ({ status, theme }) => {
         </Animated.View>
       )}
 
-      {/* JS confetti particles (emoji) - works in Expo Go */}
       {showConfetti && (
         <View style={styles.confettiContainer} pointerEvents="none">
           {particles.map((p, i) => {

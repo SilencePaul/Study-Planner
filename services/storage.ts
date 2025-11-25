@@ -1,4 +1,3 @@
-// services/storage.ts
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState } from '@/types';
 import { STORAGE_KEYS, DEFAULT_SETTINGS } from '@/constants';
@@ -9,7 +8,7 @@ export const loadState = async (): Promise<AppState> => {
       AsyncStorage.getItem(STORAGE_KEYS.SESSIONS),
       AsyncStorage.getItem(STORAGE_KEYS.ASSIGNMENTS),
       AsyncStorage.getItem(STORAGE_KEYS.SETTINGS),
-      AsyncStorage.getItem(STORAGE_KEYS.ACTIVE_TIMERS), // Add this line
+      AsyncStorage.getItem(STORAGE_KEYS.ACTIVE_TIMERS),
       AsyncStorage.getItem('gamification'),
     ]);
 
@@ -19,7 +18,7 @@ export const loadState = async (): Promise<AppState> => {
       sessions: sessionsData ? JSON.parse(sessionsData) : [],
       assignments: assignmentsData ? JSON.parse(assignmentsData) : [],
       settings: settingsData ? JSON.parse(settingsData) : DEFAULT_SETTINGS,
-      activeTimers: timersData ? JSON.parse(timersData) : {}, // Add this line
+      activeTimers: timersData ? JSON.parse(timersData) : {},
       xp: typeof gamification.xp === 'number' ? gamification.xp : 0,
       level: typeof gamification.level === 'number' ? gamification.level : 0,
     };
@@ -29,7 +28,7 @@ export const loadState = async (): Promise<AppState> => {
       sessions: [],
       assignments: [],
       settings: DEFAULT_SETTINGS,
-      activeTimers: {}, // Add this to initial state
+      activeTimers: {}, // Initial state
       xp: 0,
       level: 0,
     };
