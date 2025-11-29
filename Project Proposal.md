@@ -11,12 +11,12 @@
 
 ### 1. Motivation
 #### 1.1 The Problem
-Many students have difficulty planning their study time. Some of them are easily forget what they are supposed to do, while others study for long periods without taking breaks. Some start late and rush before exams. Also, notes are easily lost, and phone reminders are often ignored. This shows without a simple plan, studying feels stressfully and unorganized. To stay focused and manage time well, students need a study app that makes learning easier and calmer. 
+Many students have difficulties in planning their study time. Some of them easily forget what they are supposed to do, while others study for long periods without taking breaks. Some start late and rush before exams. Some do not balance the time uasge between different courses. Also, notes are easily lost, and phone reminders are often ignored. This shows that without a simple plan studying feels stressfully and unorganized. To stay focused and manage time well, students need a study app that makes learning easier and calmer. 
 
 
 
 #### 1.2 Why It Is Worth Pursuing
-A study tool can make studying easier and more focused. When students see their progress, they feel proud. A good schedule saves time and keeps the mind calm. This app helps users build simple habits. It also gives reminders to study and rest. Its user-friendly design supports balance between work and breaks.
+A study tool can not only help manage study plans but also inspire a passion for learning. When students see their progress, they feel proud and happiness. A good schedule saves time and keeps the mind calm. This app helps users build simple habits. It also gives reminders to study and rest. Its user-friendly design supports balance between work and breaks.
 
 
 
