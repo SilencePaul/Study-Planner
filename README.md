@@ -5,11 +5,11 @@ Final Report (README.md)
 
 ## 1. Team Information
 
-|Member | Name | Student Number | 
-|------|------|----------------|
-|1| BINBIN WANG | 1011770460 | 
-|2| Yiming Liu  | 1011337402 | 
-|3| Yalin Tuo | 1006033196 | 
+|Member | Name | Student Number | Email |
+|------|------|----------------|----------------|
+|1| BINBIN WANG | 1011770460 | |
+|2| Yiming Liu  | 1011337402 | |
+|3| Yalin Tuo | 1006033196 | |
 
 ## 2. Motivation
 
