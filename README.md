@@ -356,17 +356,14 @@ They can launch the app through a simulator or Expo Go on a physical device.
 
 ## 10. Lessons Learned and Concluding Remarks
 
-Throughout this project, our team gained hands-on experience building mobile applications with React Native and Expo. Along the way, we learned how to:
-- Organize and manage global state using the Context API together with useReducer.
+Throughout this project, our team gained experiences in building mobile applications with React Native and Expo. Followings are the aspects we have learnt:
+- Organize and manage global state using the Context API  with useReducer.
 - Structure navigation in a clean, scalable way with Expo Router.
 - Store data reliably through AsyncStorage, supported by a custom wrapper that we built.
 - Handle asynchronous features like timers, reminders, and notifications.
 - Work through permission handling and subtle differences between mobile platforms.
-- Design responsive UI components that adapt to themes and screen sizes.
-- Troubleshoot UI glitches and logic bugs across both Android and iOS.
-- Collaborate through Git while keeping the codebase modular and easy to maintain.
 
-The final Study Planner App successfully meets the goals we set out at the start. It offers students a practical way to organize their study routines and stay on track. Completing this project helped us grow in mobile UI/UX design, state management, asynchronous programming, and collaborative development. We’re proud of the outcome and the progress we made throughout the process.
+The Study Planner App has successfully meet the motivation at the start. It not only offer students a reminder of their course work, but also make study an interesting and enjoyable parts of lives.  Through the process, we have developed experiences in mobile UI/UX design, state management, asynchronous programming, and collaborative development. 
 ## Video Demo
 (link should be here)
 
