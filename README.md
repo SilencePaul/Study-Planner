@@ -7,15 +7,14 @@ Final Report (README.md)
 
 |Member | Name | Student Number | Email |
 |------|------|----------------|----------------|
-|1| BINBIN WANG | 1011770460 | |
+|1| BINBIN WANG | 1011770460 |binb.wang@mail.utoronto.ca|
 |2| Yiming Liu  | 1011337402 | |
-|3| Yalin Tuo | 1006033196 | |
+|3| Yalin Tuo | 1006033196 | yalin.tuo@mail.utoronto.ca|
 
 ## 2. Motivation
+During the university lives, students are struggling to manage their studying activities, including keeping track of task progress and organizing upcoming assignment deadlines. Traditional calendars or note-taking apps are more like writing down deadline on the paper and do not have features such as integrated study timers, task-based progress tracking, reminder intervals, or meaningful productivity feedback. 
 
-Students frequently struggle to manage daily study sessions, keep track of task progress, and organize upcoming assignment deadlines. Traditional calendar or note-taking apps lack features such as integrated study timers, task-based progress tracking, reminder intervals, or meaningful productivity feedback. 
-
-We wanted to build a lightweight and academically-focused productivity application that supports better habits, improves consistency, and fits naturally into a student’s workflow. This motivation stems from our own challenges balancing university coursework, deadlines, and study routines.
+We set out to build a lightweight, academically focused productivity application that helps students reach their academic milestones smoothly and with enthusiasm. Our motivation comes from our own challenges in balancing university coursework, deadlines, and study routines.
 
 ---
 
@@ -357,19 +356,17 @@ They can launch the app through a simulator or Expo Go on a physical device.
 
 ## 10. Lessons Learned and Concluding Remarks
 
-Throughout the development process, the team gained practical experience with mobile development using React Native and Expo. Key takeaways include:
+Throughout this project, our team gained hands-on experience building mobile applications with React Native and Expo. Along the way, we learned how to:
+- Organize and manage global state using the Context API together with useReducer.
+- Structure navigation in a clean, scalable way with Expo Router.
+- Store data reliably through AsyncStorage, supported by a custom wrapper that we built.
+- Handle asynchronous features like timers, reminders, and notifications.
+- Work through permission handling and subtle differences between mobile platforms.
+- Design responsive UI components that adapt to themes and screen sizes.
+- Troubleshoot UI glitches and logic bugs across both Android and iOS.
+- Collaborate through Git while keeping the codebase modular and easy to maintain.
 
-- Modeling global application state using Context API and useReducer.
-- Designing scalable navigation structures with Expo Router.
-- Persisting data reliably using AsyncStorage and a custom wrapper.
-- Implementing asynchronous behavior for timers, reminders, and notifications.
-- Handling permissions and differences across platforms.
-- Creating responsive, theme-aware UI components.
-- Debugging UI and logic issues across Android/iOS devices.
-- Collaborating through Git and maintaining clean modular architecture.
-
-The completed Study Planner App meets all project objectives and provides a practical tool for students to organize their study routines more effectively. This project strengthened our skills in mobile UI/UX design, state management, asynchronous programming, and teamwork. We are satisfied with the final outcome and the learning achieved during development.
-
+The final Study Planner App successfully meets the goals we set out at the start. It offers students a practical way to organize their study routines and stay on track. Completing this project helped us grow in mobile UI/UX design, state management, asynchronous programming, and collaborative development. We’re proud of the outcome and the progress we made throughout the process.
 ## Video Demo
 (link should be here)
 
