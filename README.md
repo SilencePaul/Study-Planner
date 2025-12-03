@@ -7,8 +7,8 @@ Final Report (README.md)
 
 |Member | Name | Student Number | Email |
 |------|------|----------------|----------------|
-|1| BINBIN WANG | 1011770460 |binb.wang@mail.utoronto.ca|
-|2| Yiming Liu  | 1011337402 | |
+|1| BINBIN WANG | 1011770460 | binb.wang@mail.utoronto.ca|
+|2| Yiming Liu  | 1011337402 | yimingpaul.liu@mail.utoronto.ca|
 |3| Yalin Tuo | 1006033196 | yalin.tuo@mail.utoronto.ca|
 
 ## 2. Motivation
