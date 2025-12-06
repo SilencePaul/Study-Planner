@@ -329,7 +329,13 @@ eas build --platform android
 ```
 After the build completes, provide the download link to the APK file.
 
-### 8.3 iOS IPA (EAS Build)
+### 8.3 Android APK Download
+Click below to download and install the latest Android build:
+
+👉 **[Download study-planner.apk](./builds/study-planner.apk)**  
+(Size: ~97 MB)
+
+### 8.4 iOS IPA (EAS Build)
 To generate an iOS archive:
 ```bash
 eas build --platform ios
@@ -337,7 +343,7 @@ eas build --platform ios
 
 Provide the generated IPA or TestFlight link.
 
-### 8.4 Local Execution Option
+### 8.5 Local Execution Option
 If needed, reviewers can run the app locally:
 
 ```bash
