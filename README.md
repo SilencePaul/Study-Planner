@@ -23,28 +23,34 @@ We set out to build a lightweight, academically focused productivity application
 ### Functional Objectives
 - Allow users to create, view, and manage daily study sessions.
 - Provide a built-in study timer with start, pause, and reset controls.
+- Support short quick-test reminder intervals.
 - Support task management, including creation, completion toggling, linking to assignments, and deletion.
 - Enable assignment creation with due dates and automatic progress calculation.
 - Provide optional periodic study reminders.
 - Offer motivational features like badges, study tips, and break suggestions.
+- XP and level system with animated XP toast and persisted level progress.
+- Level card showing current level and XP and a progress bar.
 - Ensure all data persists reliably across app restarts.
+- Study tips engourage users to finish the work.
 
 ### Technical Objectives
-- Implement the app using React Native, Expo, and TypeScript.
-- Use Expo Router for file-based navigation.
-- Use Context API + useReducer for global state management.
-- Persist state through AsyncStorage.
-- Implement a theme system with light, dark, and auto modes.
-- Integrate expo-notifications for user reminders.
+### Technical Objectives
+- Implement the app using React Native, Expo (SDK 54), and TypeScript (5.9).
+- Use Expo Router for file-based routing and file-based navigation patterns.
+- Use React Context + `useReducer` for global state management and predictable updates.
+- Persist app state using `@react-native-async-storage/async-storage` via a small wrapper in `services/storage.ts`.
+- Implement a theme system (light / dark / auto) via a ThemeProvider and responsive tokens.
+- Integrate `expo-notifications` for scheduling local reminders and handling permission flows.
+- Integrate with external APIs via `services/api.ts` for study tips.
 
 ---
 
 ## 4. Technical Stack
 
 ### Core Technologies
-- React Native  
-- Expo SDK 50  
-- TypeScript  
+- React Native  0.81.5
+- Expo SDK 54  
+- TypeScript 5.9.2 
 
 ### Navigation
 - Expo Router (file-based routing)
@@ -82,7 +88,8 @@ We set out to build a lightweight, academically focused productivity application
 - Delete tasks directly from the detail view.
 - Link tasks to related assignments for automatic progress calculation.
 - Visual badges (Gold, Silver, Incomplete) showing completion status.
-- Select study reminder interval (None, 5, 15, 30 minutes).
+- Animation cheers when achieve badges.
+- Select study reminder interval (None, 5, 15, 30 minutes and quick tests).
 - Display dynamic study tips fetched from a public API.
 
 ### 5.2 Tasks
@@ -94,7 +101,8 @@ Each task includes:
 
 Task logic:
 - Full-goal tasks contribute **100%** progress to the linked assignment.
-- Partial-goal tasks contribute **30%** each, up to a **maximum of 90%** if no full goal task is completed.
+- Partial-goal tasks contribute a configurable percentage which can be determined by the user.
+- If percentage is not provided, the default is set to 50% per partial task.
 
 ### 5.3 Assignments
 - Create new assignments with name and due date.
@@ -144,6 +152,7 @@ Persistence is implemented using a custom AsyncStorage wrapper for reliability a
 - Encourages user engagement and consistency.
 - Implemented as a reusable TypeScript component (`Badge.tsx`).
 - Displayed on both Home and Detail screens.
+- Completing tasks awards XP (full tasks = 100 XP; partial tasks = 100 × task partialPercent with a default if unset)
 
 #### 5.7.2 Custom Animations for Progress Tracking
 - Smooth animated transitions for assignment progress.
@@ -153,6 +162,8 @@ Persistence is implemented using a custom AsyncStorage wrapper for reliability a
   - `Animated.timing` for smooth interpolation
 - Created in reusable `ProgressBar.tsx` component with TypeScript-typed props.
 - Enhances user experience with polished, responsive UI feedback.
+- Shows animated "+N XP" toast when XP is gained.
+- XP and level persist across app restarts.
 
 ---
 
@@ -169,7 +180,7 @@ Persistence is implemented using a custom AsyncStorage wrapper for reliability a
 
 ### 6.2 Study Session Detail
 - Main timer with Start, Pause, and Reset buttons.
-- Timer increments global state every second when running.
+- Timer increments every second when running.
 - Break suggestions appear after long study durations.
 - Tasks section:
   - Add new tasks
@@ -222,7 +233,7 @@ To run and develop the Study Planner App, the following tools are required:
 ### 7.2 Installation
 Clone the repository and install dependencies:
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/SilencePaul/Study-Planner
 cd study-planner
 npm install --legacy-peer-deps
 ```
@@ -248,8 +259,7 @@ my-app/
 │   ├── index.tsx
 │   ├── +not-found.tsx
 │   ├── context.tsx
-│   ├── assignments/
-│   │   ├── _layout.tsx
+│   ├── assignments
 │   │   ├── index.tsx
 │   │   ├── [id].tsx
 │   │   └── new.tsx
@@ -266,8 +276,12 @@ my-app/
 │   ├── notification-icon.png
 │   ├── splash-icon.png
 │   └── splash.png
+├── builds/
+|   └── Study Planner.apk
 ├── components/
 │   ├── Badge.tsx
+│   ├── Button.tsx
+|   ├── GamificationHeader.tsx
 │   └── ProgressBar.tsx
 ├── constants/
 │   └── index.tsx
@@ -279,16 +293,19 @@ my-app/
 │   └── storage.ts
 ├── theme/
 │   ├── context.tsx
-│   └── index.ts
+│   ├── index.ts
+│   └── styles.ts
 ├── types/
 │   └── index.tsx
 ├── utils/
 │   └── index.ts
-├── App.tsx
+├── app.tsx
 ├── app.json
+├── eas.json
 ├── index.ts
 ├── package.json
 ├── package-lock.json
+├── README.md
 └── tsconfig.json
 ```
 ## 8. Deployment Information
@@ -365,5 +382,12 @@ Throughout this project, our team gained experiences in building mobile applicat
 
 The Study Planner App has successfully meet the motivation at the start. It not only offer students a reminder of their course work, but also make study an interesting and enjoyable parts of lives.  Through the process, we have developed experiences in mobile UI/UX design, state management, asynchronous programming, and collaborative development. 
 ## Video Demo
-(link should be here)
+[Watch on YouTube](https://youtu.be/pS6j4IAf-J0)
 
+<p align="center">
+  <a href="https://youtu.be/pS6j4IAf-J0" target="_blank">
+    <img src="https://img.youtube.com/vi/pS6j4IAf-J0/0.jpg" 
+         alt="Study Planner Demo Video" 
+         width="600"/>
+  </a>
+</p>
