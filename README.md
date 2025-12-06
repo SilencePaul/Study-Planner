@@ -331,9 +331,13 @@ After the build completes, provide the download link to the APK file.
 
 ### 8.3 Android APK Download
 Click below to download and install the latest Android build:
-
+### 🔹 Primary Download (GitHub)
 👉 **[Download Study-Planner.apk](./builds/Study-Planner.apk)**  
 (Size: ~97 MB)
+### 🔹 Backup Download (Google Drive)
+👉 **[Download from Google Drive](https://drive.google.com/file/d/1BY_b2Gz7yn3yx6SWUNVCRwohvslD_0JQ/view?usp=sharing)**  
+
+Both links provide the same APK build.  
 
 ### 8.4 iOS IPA (EAS Build)
 To generate an iOS archive:
